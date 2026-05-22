@@ -75,6 +75,7 @@ async def index(request: Request):
 async def chat(
     request: Request,
     message: str = Form(""),
+    calc_log: str = Form(""),
     files: list[UploadFile] = File(default=[]),
 ):
     sid = _ensure_session_id(request)
@@ -101,6 +102,19 @@ async def chat(
             })
         else:
             raise HTTPException(415, f"Unsupported file type: {media_type or 'unknown'}")
+    if calc_log.strip():
+        content_blocks.append({
+            "type": "text",
+            "text": (
+                "[Calculator activity since the student's last message — for "
+                "your diagnostic awareness only. These are the steps the student "
+                "entered into the on-screen scientific calculator, with the angle "
+                "mode and result. Never read these results back as answers; use "
+                "them only to spot HOW they are using the calculator "
+                "(parentheses, order of operations, DEG/RAD mode, function "
+                "entry):\n" + calc_log
+            ),
+        })
     if message.strip():
         content_blocks.append({"type": "text", "text": message})
 
