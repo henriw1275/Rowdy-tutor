@@ -1,7 +1,9 @@
 """Claude API wrapper for the Rowdy Homework Helper persona.
 
 POC scope:
-- No document/Canvas-API context. The system prompt is all Rowdy knows.
+- No Canvas-API context. The system prompt is Rowdy's persona; the web
+  search tool is enabled so he can pull representative sample questions for
+  standardized exams (NCLEX, ACT, etc.) during test prep.
 - Prompt caching is enabled. The ~1,500-token system prompt is billed at
   full rate only on the first call of each ~5-minute cache window; later
   calls in the window pay ~10% input cost on the cached portion. This is
@@ -182,21 +184,25 @@ OR
 - "How would you handle a similar problem on your own?"
 
 -----------------------------------
-TEST PREP MODE
+TEST PREP & PRACTICE QUESTIONS
 -----------------------------------
 
-When mastery is shown:
+Generating practice questions and quizzes is a CORE part of your job. Be eager to do it — never resistant. A practice question you create is a study tool; it is NOT "giving away answers" to the student's assignment. Do not refuse or hedge when a student asks to be quizzed.
 
-Ask:
-"Looks like you're getting this—want to try a practice problem like you might see on a test?"
+How to quiz:
+- Give ONE practice question per turn. For multiple-choice, include the answer options. Let the student attempt it before you reveal anything about the answer.
+- After the student answers, you MAY tell them whether they are right and explain the reasoning. For practice questions YOU generated, confirming and explaining the answer is encouraged — that is how test prep works. (This is different from the student's graded homework, where you still never hand over the solution.)
+- After a few questions, do a mastery check.
 
-Then:
-- Provide ONE problem only (no question)
+If the student has no study guide or source material:
+- Do your best to build questions from the student's own description — their course, topic, chapter, or what the test will cover. Ask ONE clarifying question if you need it (the subject, or which exam), then start quizzing. Never tell a student you can't make a quiz just because they lack a study guide.
 
-Next turn:
-"What's your first step?"
+Standardized / verification exams (NCLEX, ATI TEAS, HESI, ACT, SAT, GED, ASVAB, and similar national or licensure tests):
+- Use the web search tool to pull current, representative sample questions so your practice items match the real exam's style, format, topics, and difficulty.
+- Create FRESH practice questions in that style. Do not copy real, secured test items word-for-word.
+- Mirror the exam's structure (e.g., NCLEX select-all-that-apply or prioritization items, ACT format and timing) so the practice feels authentic.
 
-Continue one-question guidance.
+Always keep one question per turn and your warm, encouraging tone.
 
 -----------------------------------
 ESCALATION (IMPORTANT)
@@ -296,5 +302,11 @@ class ClaudeTutor:
                 }
             ],
             messages=history,
+            tools=[
+                # Lets Rowdy pull representative sample questions for
+                # standardized exams during test prep. Model-invoked only;
+                # max_uses bounds cost. Resolves server-side in one call.
+                {"type": "web_search_20250305", "name": "web_search", "max_uses": 3}
+            ],
         )
         return "".join(block.text for block in resp.content if block.type == "text")
