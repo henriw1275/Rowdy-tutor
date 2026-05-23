@@ -33,6 +33,16 @@ In the Railway dashboard, open the **Variables** tab and add:
 | `ANTHROPIC_API_KEY` | Your key from console.anthropic.com |
 | `CLAUDE_MODEL` | `claude-haiku-4-5-20251001` |
 
+Optional (usage tracking + cost guards — all safe to omit; defaults are permissive):
+
+| Variable | Default | What it does |
+|---|---|---|
+| `ADMIN_TOKEN` | _(unset)_ | Required to view `/admin/stats`. Unset = stats endpoint disabled. |
+| `DAILY_TOKEN_BUDGET` | `0` (off) | Global tokens/day before Rowdy pauses for everyone. Protects your spend. |
+| `PER_SESSION_DAILY_MSG_CAP` | `0` (off) | Messages/day per browser before a soft cap. Abuse deterrent only. |
+| `SESSION_TTL_MINUTES` | `180` | Idle sessions are dropped from RAM after this many minutes. |
+| `MAX_MESSAGE_CHARS` | `8000` | Rejects oversized pasted messages before they cost tokens. |
+
 Railway will redeploy.
 
 ## 4. Generate a public URL
@@ -70,6 +80,30 @@ greeting and start the diagnostic flow.
 | Page loads but chat returns 500 | Open Railway logs. Usually a missing or wrong `ANTHROPIC_API_KEY` |
 | Rowdy responds but breaks character (gives direct answers) | The system prompt isn't being sent. Confirm `claude_service.py` is the one with `ROWDY_SYSTEM_PROMPT` and prompt caching enabled |
 | Avatar shows "R" instead of the mule | `static/rowdy.png` didn't get pushed. Check `git ls-files \| grep rowdy` |
+
+## Usage tracking & caps
+
+Three layers, lightest first:
+
+1. **Anthropic Console** — free, no setup. Shows total spend and volume for your
+   API key. Web search bills as a separate line, so keep an eye on it.
+2. **App logs** — every chat emits one `USAGE {...}` JSON line to stdout (visible
+   in Railway logs): timestamp, a short anonymous session label, token counts, and
+   web-search count. **Metadata only — no prompt or reply text is ever logged**, to
+   stay clear of FERPA.
+3. **Live aggregates** — set `ADMIN_TOKEN`, then hit
+   `https://YOUR-URL/admin/stats?token=YOUR_TOKEN` for a JSON summary (requests,
+   tokens, web searches, active sessions, today's token total vs budget). These
+   reset on restart.
+
+Caps are **off by default**. Turn them on when ready:
+- `DAILY_TOKEN_BUDGET` is the real protection — a global tokens-per-day ceiling.
+  When hit, Rowdy returns a friendly "resting up" message to everyone until the
+  next UTC day. Pick a number from your budget using current Haiku pricing.
+- `PER_SESSION_DAILY_MSG_CAP` is a soft per-browser deterrent. Note it is **not**
+  true per-student: sessions are anonymous cookies, so a student can reset it by
+  clearing cookies or going incognito. Real per-student caps need student identity,
+  which arrives with Canvas LTI (see the README).
 
 ## Iterating on Rowdy
 
