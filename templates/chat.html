@@ -112,6 +112,7 @@
       width: 100%;
       max-width: 760px;
       height: 100vh;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
       background: var(--bg-soft);
@@ -615,6 +616,19 @@
       font-size: 13px;
       color: var(--ink-soft);
     }
+    .calc-close {
+      all: unset;
+      cursor: pointer;
+      width: 32px; height: 32px;
+      display: grid; place-items: center;
+      border-radius: var(--r-full);
+      font-size: 22px;
+      line-height: 1;
+      color: var(--ink-soft);
+      border: 1.5px solid var(--border);
+    }
+    .calc-close:hover { color: #b4452f; border-color: #b4452f; background: rgba(180,69,47,0.08); }
+    .calc-close:active { transform: scale(0.92); }
     .calc-display {
       background: var(--bg);
       border: 1px solid var(--border);
@@ -803,6 +817,11 @@
       .empty-greeting { font-size: 38px; }
       .prompts { grid-template-columns: 1fr; }
       #calc, #calc-share, #attached { margin-left: 14px; margin-right: 14px; }
+      #calc { padding: 10px; }
+      .calc-grid { gap: 6px; }
+      .calc-grid button { padding: 9px 0; min-height: 40px; font-size: 14px; }
+      .calc-grid button.fn { font-size: 12.5px; }
+      .calc-display { min-height: 48px; padding: 8px 10px; }
     }
   </style>
 </head>
@@ -885,7 +904,7 @@
         <button class="prompt-chip" data-prompt="I'm stuck on a problem — can you walk me through it?">
           <span class="emoji">🤔</span><span>I'm stuck on something</span>
         </button>
-        <button class="prompt-chip" data-prompt="Quiz me on what I'm studying.">
+        <button class="prompt-chip" data-prompt="Quiz me with practice questions. I'll tell you the subject or the exam I'm prepping for (like the NCLEX or ACT).">
           <span class="emoji">📚</span><span>Quiz me</span>
         </button>
         <button class="prompt-chip" data-prompt="Can you explain a concept to me in plain English?">
@@ -910,7 +929,10 @@
     <div id="calc" role="group" aria-label="Scientific calculator" hidden>
       <div class="calc-head">
         <span class="label">Scientific calculator</span>
-        <span class="label" id="calcModeLabel">Mode: DEG</span>
+        <span style="display:flex;align-items:center;gap:12px;">
+          <span class="label" id="calcModeLabel">Mode: DEG</span>
+          <button id="calcClose" type="button" class="calc-close" aria-label="Close calculator">×</button>
+        </span>
       </div>
       <div class="calc-display">
         <div class="calc-expr" id="calcExpr" aria-live="polite">0</div>
@@ -1284,11 +1306,12 @@
       else if (t.dataset.eq !== undefined) { evaluate(); }
     });
 
+    function openCalc()  { calcPanel.removeAttribute("hidden"); calcBtn.setAttribute("aria-pressed", "true"); }
+    function closeCalc() { calcPanel.setAttribute("hidden", ""); calcBtn.setAttribute("aria-pressed", "false"); }
     calcBtn.addEventListener("click", () => {
-      const open = calcPanel.hasAttribute("hidden");
-      if (open) { calcPanel.removeAttribute("hidden"); calcBtn.setAttribute("aria-pressed", "true"); }
-      else { calcPanel.setAttribute("hidden", ""); calcBtn.setAttribute("aria-pressed", "false"); }
+      if (calcPanel.hasAttribute("hidden")) openCalc(); else closeCalc();
     });
+    document.getElementById("calcClose").addEventListener("click", () => { closeCalc(); input.focus(); });
 
     function updateShareBar() {
       if (calcLog.length === 0) { shareBar.classList.remove("show"); return; }
@@ -1362,6 +1385,7 @@
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         if (!a11yMenu.hasAttribute("hidden")) { a11yMenu.setAttribute("hidden", ""); a11yBtn.setAttribute("aria-expanded", "false"); }
+        if (!calcPanel.hasAttribute("hidden")) { closeCalc(); }
         if (listening && recog) recog.stop();
       }
     });
