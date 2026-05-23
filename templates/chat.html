@@ -146,38 +146,20 @@
       opacity: 0.85;
     }
 
-    .header-avatar {
-      position: relative;
-      width: 56px; height: 56px;
-      border-radius: var(--r-full);
-      background: var(--surface);
+    .header-logo {
+      width: 54px; height: 54px;
+      border-radius: var(--r-md);
+      background: #ffffff;
       flex-shrink: 0;
-      overflow: hidden;
-      border: 2.5px solid rgba(255, 255, 255, 0.7);
       display: grid;
       place-items: center;
+      padding: 5px;
+      border: 2px solid rgba(255, 255, 255, 0.7);
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
     }
-    .header-avatar .fallback {
-      position: absolute; inset: 0;
-      display: grid; place-items: center;
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 26px;
-      color: var(--primary);
-    }
-    .header-avatar img {
-      position: relative;
+    .header-logo img {
       width: 100%; height: 100%;
-      object-fit: cover;
-    }
-    .status-dot {
-      position: absolute;
-      bottom: -2px; right: -2px;
-      width: 14px; height: 14px;
-      background: var(--success);
-      border: 2.5px solid #1e6fa8;
-      border-radius: var(--r-full);
+      object-fit: contain;
     }
 
     .title-block { display: flex; flex-direction: column; line-height: 1.15; flex: 1; min-width: 0; }
@@ -186,6 +168,10 @@
       font-weight: 600;
       font-size: 21px;
       letter-spacing: -0.015em;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .subtitle {
       font-size: 12.5px;
@@ -194,6 +180,9 @@
       letter-spacing: 0.04em;
       text-transform: uppercase;
       font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* Accessibility button in header */
@@ -264,13 +253,21 @@
 
     /* Toggle switch */
     .switch { position: relative; width: 44px; height: 26px; flex-shrink: 0; }
-    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch input {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      margin: 0;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 2;
+    }
     .switch .track {
       position: absolute; inset: 0;
       background: var(--border);
       border-radius: var(--r-full);
       transition: background 0.18s;
-      cursor: pointer;
+      pointer-events: none;
     }
     .switch .track::before {
       content: "";
@@ -388,6 +385,10 @@
     /* KaTeX sizing inside bubbles */
     .msg .katex { font-size: 1.05em; }
     .msg .katex-display { margin: 0.4em 0; overflow-x: auto; overflow-y: hidden; }
+    .msg a { color: var(--primary); text-decoration: underline; word-break: break-word; }
+    .me .msg a { color: #ffffff; }
+    body.high-contrast .msg a { color: var(--primary); }
+    body.high-contrast .me .msg a { color: #ffffff; }
 
     .meta {
       font-size: 12.5px;
@@ -500,6 +501,22 @@
       line-height: 1.45;
       margin: -8px 0 6px;
     }
+    .empty-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      max-width: 430px;
+      margin-top: 2px;
+      padding: 11px 15px;
+      font-size: calc(13px * var(--font-scale));
+      line-height: 1.45;
+      color: var(--ink-soft);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      text-align: left;
+    }
+    .empty-hint svg { width: 17px; height: 17px; flex-shrink: 0; color: var(--primary); }
 
     .prompts {
       display: grid;
@@ -807,12 +824,13 @@
     /* ===== Mobile =========================================== */
     @media (max-width: 520px) {
       header { padding: 14px 16px; gap: 10px; }
-      .header-avatar { width: 48px; height: 48px; }
+      .header-logo { width: 46px; height: 46px; }
       .title { font-size: 19px; }
       .subtitle { font-size: 11.5px; }
       #log { padding: 18px 14px; gap: 14px; }
       .bubble-wrap { max-width: 86%; }
       form { padding: 12px 14px 14px; }
+      textarea { font-size: max(16px, calc(15px * var(--font-scale))); }
       .empty-avatar { width: 108px; height: 108px; }
       .empty-greeting { font-size: 38px; }
       .prompts { grid-template-columns: 1fr; }
@@ -828,15 +846,23 @@
 <body>
   <div class="shell">
     <header>
-      <div class="header-avatar">
-        <span class="fallback">R</span>
-        <img src="/static/rowdy.png" alt="" onerror="this.remove()" />
-        <span class="status-dot" aria-label="online"></span>
+      <div class="header-logo">
+        <img src="/static/crowder-logo.png" alt="Crowder College" onerror="this.style.display='none'" />
       </div>
       <div class="title-block">
         <span class="title">Rowdy the Homework Helper</span>
         <span class="subtitle">Crowder College tutoring</span>
       </div>
+      <button id="saveBtn" class="a11y-btn" type="button" title="Save conversation as a text file" aria-label="Save conversation as a text file">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+      </button>
+      <button id="resetBtn" class="a11y-btn" type="button" title="Start a new conversation" aria-label="Start a new conversation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;">
+          <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>
+        </svg>
+      </button>
       <button id="a11yBtn" class="a11y-btn" type="button" aria-haspopup="true" aria-expanded="false"
               aria-controls="a11yMenu" title="Accessibility options">Aa</button>
     </header>
@@ -904,16 +930,22 @@
         <button class="prompt-chip" data-prompt="I'm stuck on a problem — can you walk me through it?">
           <span class="emoji">🤔</span><span>I'm stuck on something</span>
         </button>
-        <button class="prompt-chip" data-prompt="Quiz me with practice questions. I'll tell you the subject or the exam I'm prepping for (like the NCLEX or ACT).">
+        <button class="prompt-chip" data-prompt="I'd like you to quiz me. What can you quiz me on?">
           <span class="emoji">📚</span><span>Quiz me</span>
         </button>
         <button class="prompt-chip" data-prompt="Can you explain a concept to me in plain English?">
           <span class="emoji">💡</span><span>Explain something simply</span>
         </button>
-        <button class="prompt-chip" data-prompt="Can you help me check my work?">
-          <span class="emoji">✅</span><span>Check my work</span>
+        <button class="prompt-chip" data-prompt="I've got a math problem to work through. I can type it out or use the calculator here.">
+          <span class="emoji">🧮</span><span>Work a math problem</span>
         </button>
       </div>
+      <p class="empty-hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        <span>Need a copy for your instructor? Tap the download button in the top bar anytime to save this chat as a file.</span>
+      </p>
     </div>
 
     <!-- Message log -->
@@ -1026,6 +1058,7 @@
     const attachedDiv = document.getElementById("attached");
 
     const attached = new Map();   // key -> File
+    const transcript = [];        // clean record of the visible conversation, for "Save"
 
     /* ---------- Math rendering (KaTeX) -------------------------- */
     function renderMath(el) {
@@ -1041,6 +1074,41 @@
           throwOnError: false,
         });
       } catch (e) { /* leave text as-is on failure */ }
+    }
+
+    /* Turn plain URLs and emails into clickable links — operates on text
+       nodes only (no innerHTML), so it can't inject markup. Runs after
+       KaTeX so it leaves rendered math alone. */
+    function linkify(el) {
+      const re = /(https?:\/\/[^\s<]+|[\w.+-]+@[\w.-]+\.[a-zA-Z]{2,})/g;
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+      const nodes = [];
+      while (walker.nextNode()) {
+        const p = walker.currentNode.parentNode;
+        if (p && (p.tagName === "A" || p.closest(".katex"))) continue;
+        nodes.push(walker.currentNode);
+      }
+      for (const node of nodes) {
+        const text = node.nodeValue;
+        re.lastIndex = 0;
+        if (!re.test(text)) continue;
+        re.lastIndex = 0;
+        const frag = document.createDocumentFragment();
+        let last = 0, m;
+        while ((m = re.exec(text))) {
+          let token = m[0];
+          token = token.replace(/[.,;:!?)\]]+$/, "");   // trim trailing punctuation
+          if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+          const a = document.createElement("a");
+          a.textContent = token;
+          a.href = token.includes("@") && !token.startsWith("http") ? "mailto:" + token : token;
+          if (!token.includes("@")) { a.target = "_blank"; a.rel = "noopener noreferrer"; }
+          frag.appendChild(a);
+          last = m.index + token.length;
+        }
+        if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+        node.parentNode.replaceChild(frag, node);
+      }
     }
 
     /* ---------- View helpers ------------------------------------ */
@@ -1068,7 +1136,8 @@
       return { turn, wrap, msg };
     }
 
-    function add(role, text, meta) {
+    function renderTurn(role, text, meta, opts) {
+      opts = opts || {};
       ensureLogVisible();
       if (role === "user") {
         const turn = document.createElement("div");
@@ -1088,15 +1157,23 @@
         turn.appendChild(wrap);
         log.appendChild(turn);
         renderMath(msg);
+        linkify(msg);
       } else {
         const { turn, wrap, msg } = makeBotTurn();
         msg.textContent = text;
         log.appendChild(turn);
         renderMath(msg);
+        linkify(msg);
         addSpeakButton(wrap, text);
-        if (autoRead) speak(text);
+        if (opts.speak) speak(text);
       }
       log.scrollTop = log.scrollHeight;
+    }
+
+    function add(role, text, meta) {
+      renderTurn(role, text, meta, { speak: role === "bot" && autoRead });
+      transcript.push({ role, text, meta: meta || "", t: new Date() });
+      persistTranscript();
     }
 
     function showTyping() {
@@ -1372,27 +1449,122 @@
       const lg = store.get("rowdy_lang"); if (lg) { voiceLang = lg; langSel.value = lg; }
     }
 
+    function openA11y() {
+      a11yMenu.removeAttribute("hidden");
+      a11yBtn.setAttribute("aria-expanded", "true");
+      const first = document.getElementById("sizeDown");
+      if (first) first.focus();
+    }
+    function closeA11y(returnFocus) {
+      a11yMenu.setAttribute("hidden", "");
+      a11yBtn.setAttribute("aria-expanded", "false");
+      if (returnFocus) a11yBtn.focus();
+    }
     a11yBtn.addEventListener("click", () => {
-      const open = a11yMenu.hasAttribute("hidden");
-      if (open) { a11yMenu.removeAttribute("hidden"); a11yBtn.setAttribute("aria-expanded", "true"); }
-      else { a11yMenu.setAttribute("hidden", ""); a11yBtn.setAttribute("aria-expanded", "false"); }
+      if (a11yMenu.hasAttribute("hidden")) openA11y(); else closeA11y(true);
     });
     document.addEventListener("click", (e) => {
       if (!a11yMenu.hasAttribute("hidden") && !a11yMenu.contains(e.target) && e.target !== a11yBtn) {
-        a11yMenu.setAttribute("hidden", ""); a11yBtn.setAttribute("aria-expanded", "false");
+        closeA11y(false);
       }
     });
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        if (!a11yMenu.hasAttribute("hidden")) { a11yMenu.setAttribute("hidden", ""); a11yBtn.setAttribute("aria-expanded", "false"); }
+        if (!a11yMenu.hasAttribute("hidden")) closeA11y(true);
         if (!calcPanel.hasAttribute("hidden")) { closeCalc(); }
         if (listening && recog) recog.stop();
       }
     });
 
     /* ====================================================================
+       SAVE CONVERSATION (.txt) — for showing an instructor
+    ==================================================================== */
+    const STORE_KEY = "rowdy_transcript";
+
+    function persistTranscript() {
+      try {
+        const slim = transcript.slice(-200).map((x) => ({ role: x.role, text: x.text, meta: x.meta, t: x.t.toISOString() }));
+        localStorage.setItem(STORE_KEY, JSON.stringify(slim));
+      } catch (e) { /* storage unavailable — degrade silently */ }
+    }
+
+    // Re-draw a saved conversation after a refresh / mobile tab reload.
+    function loadSavedTranscript() {
+      let arr;
+      try {
+        const raw = localStorage.getItem(STORE_KEY);
+        if (!raw) return;
+        arr = JSON.parse(raw);
+      } catch (e) { return; }
+      if (!Array.isArray(arr) || arr.length === 0) return;
+      for (const item of arr) {
+        const t = new Date(item.t);
+        transcript.push({ role: item.role, text: item.text, meta: item.meta || "", t: isNaN(t) ? new Date() : t });
+        renderTurn(item.role, item.text, item.meta || "", { speak: false });
+      }
+    }
+
+    function buildTranscript() {
+      const now = new Date();
+      const lines = [];
+      lines.push("Rowdy the Homework Helper — Crowder College");
+      lines.push("Conversation saved: " + now.toLocaleString());
+      lines.push("=".repeat(48));
+      lines.push("");
+      for (const turn of transcript) {
+        const who = turn.role === "user" ? "Student" : "Rowdy";
+        const time = turn.t.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        lines.push("[" + time + "] " + who + ":");
+        lines.push(turn.text);
+        if (turn.meta) lines.push("   (" + turn.meta + ")");
+        lines.push("");
+      }
+      // Normalize to CRLF so it opens cleanly in Windows Notepad too.
+      return lines.join("\n").replace(/\r?\n/g, "\r\n");
+    }
+
+    async function saveTranscript() {
+      if (transcript.length === 0) { alert("There's no conversation to save yet — ask Rowdy something first."); return; }
+      const out = buildTranscript();
+      const filename = "rowdy-conversation-" + new Date().toISOString().slice(0, 10) + ".txt";
+      // On touch devices, prefer the share sheet (Save to Files / email to instructor).
+      const coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+      try {
+        if (coarse && navigator.canShare) {
+          const file = new File([out], filename, { type: "text/plain" });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: "Rowdy conversation" });
+            return;
+          }
+        }
+      } catch (e) { if (e && e.name === "AbortError") return; /* else fall through to download */ }
+      const url = URL.createObjectURL(new Blob([out], { type: "text/plain;charset=utf-8" }));
+      const a = document.createElement("a");
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    /* ====================================================================
        EVENTS
     ==================================================================== */
+    document.getElementById("saveBtn").addEventListener("click", saveTranscript);
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      if (log.childElementCount === 0) { input.focus(); return; }
+      if (!confirm("Start a new conversation? This clears the current chat.")) return;
+      fetch("/api/reset", { method: "POST" }).catch(() => {});
+      if (synth) synth.cancel();
+      log.innerHTML = "";
+      log.classList.remove("visible");
+      empty.classList.remove("hidden");
+      attached.clear(); renderAttached();
+      calcLog = []; updateShareBar();
+      transcript.length = 0;
+      try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+      input.value = ""; autoGrow(); input.focus();
+    });
+
     attachBtn.addEventListener("click", () => fileInput.click());
     fileInput.addEventListener("change", () => {
       for (const f of fileInput.files) attached.set(crypto.randomUUID(), f);
@@ -1440,8 +1612,9 @@
         typingTurn.remove();
         add("bot", data.reply);
       } catch (err) {
+        console.error(err);
         typingTurn.remove();
-        add("bot", "Sorry — something went wrong. " + err.message);
+        add("bot", "Well, shoot — looks like somethin' hiccuped on my end. Give it another try in a sec, and if it keeps actin' up you can email tutoring@crowder.edu.");
       } finally {
         sendBtn.disabled = false;
         input.focus();
@@ -1450,6 +1623,7 @@
 
     /* ---------- Init -------------------------------------------- */
     loadPrefs();
+    loadSavedTranscript();
     refreshExpr();
     window.addEventListener("load", () => input.focus());
   </script>
