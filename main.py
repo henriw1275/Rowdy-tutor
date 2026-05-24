@@ -25,6 +25,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
@@ -285,15 +286,61 @@ async def reset(request: Request):
     return {"ok": True}
 
 
+def _stats_html(d: dict) -> str:
+    t = d["today"]
+    if t["budget"]:
+        pct = round(100 * t["tokens"] / t["budget"]) if t["budget"] else 0
+        today = f'{t["tokens"]:,} / {t["budget"]:,} tokens ({pct}%)'
+    else:
+        today = f'{t["tokens"]:,} tokens (no daily cap set)'
+    cards = [
+        ("Requests", f'{d["requests"]:,}'),
+        ("Input tokens", f'{d["input_tokens"]:,}'),
+        ("Output tokens", f'{d["output_tokens"]:,}'),
+        ("Cache read", f'{d["cache_read_tokens"]:,}'),
+        ("Cache write", f'{d["cache_write_tokens"]:,}'),
+        ("Web searches", f'{d["web_searches"]:,}'),
+        ("Active sessions", f'{d["active_sessions"]:,}'),
+    ]
+    cells = "".join(
+        f'<div class="card"><div class="k">{k}</div><div class="v">{v}</div></div>'
+        for k, v in cards
+    )
+    return f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="30">
+<title>Rowdy usage</title>
+<style>
+  body {{ margin:0; font-family:system-ui,sans-serif; background:#fbf5e9; color:#2b2018; }}
+  header {{ background:linear-gradient(135deg,#143f63,#1e6fa8); color:#fff; padding:18px 22px; }}
+  header h1 {{ margin:0; font-size:18px; }}
+  header p {{ margin:4px 0 0; font-size:12.5px; opacity:.85; }}
+  .wrap {{ padding:20px; max-width:760px; margin:0 auto; }}
+  .today {{ background:#e7f0f7; border:1px solid #1e6fa8; border-radius:12px; padding:14px 16px; margin-bottom:16px; font-weight:600; color:#185b8a; }}
+  .grid {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }}
+  .card {{ background:#fff; border:1px solid #ecdec1; border-radius:12px; padding:14px 16px; }}
+  .k {{ font-size:12.5px; color:#6f5d4e; }}
+  .v {{ font-size:24px; font-weight:700; margin-top:4px; }}
+  footer {{ color:#b6a795; font-size:12px; margin-top:18px; text-align:center; }}
+</style></head><body>
+<header><h1>Rowdy — usage</h1><p>Counts since {d["since"]} (UTC). Resets on restart.</p></header>
+<div class="wrap">
+  <div class="today">Today ({t["day"]}): {today}</div>
+  <div class="grid">{cells}</div>
+  <footer>Auto-refreshes every 30 seconds.</footer>
+</div></body></html>"""
+
+
 @app.get("/admin/stats")
 async def admin_stats(request: Request):
     """Usage aggregates (metadata only). Requires ADMIN_TOKEN to be set and
-    supplied via ?token=... or an X-Admin-Token header. Disabled if unset."""
+    supplied via ?token=... or an X-Admin-Token header. Disabled if unset.
+    Returns an HTML dashboard to browsers, JSON to everything else."""
     supplied = request.query_params.get("token") or request.headers.get("x-admin-token", "")
     if not ADMIN_TOKEN or not secrets.compare_digest(supplied, ADMIN_TOKEN):
         raise HTTPException(403, "Forbidden")
     _roll_daily()
-    return {
+    data = {
         "since": USAGE["started"],
         "requests": USAGE["requests"],
         "input_tokens": USAGE["input_tokens"],
@@ -308,6 +355,9 @@ async def admin_stats(request: Request):
             "budget": DAILY_TOKEN_BUDGET or None,
         },
     }
+    if "text/html" in request.headers.get("accept", ""):
+        return HTMLResponse(_stats_html(data))
+    return data
 
 
 @app.get("/healthz")

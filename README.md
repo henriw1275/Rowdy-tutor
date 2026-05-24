@@ -13,7 +13,7 @@ where you want it.
 |---|---|
 | Rowdy persona as the verbatim system prompt | Canvas LTI 1.3 integration |
 | Per-browser conversation memory (cookie-based session) | Authentication / user identity |
-| Prompt caching for the ~1,500-token system prompt | Postgres / Redis / any DB |
+| Prompt caching for the ~3,300-token system prompt | Postgres / Redis / any DB |
 | Last 12 messages sent to Claude per call | Logging of student prompts/responses |
 | PDF + image upload (homework, screenshots) | Document **production** |
 | Aggressive attachment trimming (see below) | Streaming responses |
