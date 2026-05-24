@@ -951,6 +951,9 @@
     <!-- Message log -->
     <div id="log" role="log" aria-live="polite" aria-label="Conversation with Rowdy"></div>
 
+    <!-- Screen-reader-only status (e.g. "Rowdy is thinking") -->
+    <div id="srStatus" class="sr-only" role="status" aria-live="polite"></div>
+
     <!-- Calculator-shared notice -->
     <div id="calc-share" role="status">
       <span class="grow"></span>
@@ -1056,9 +1059,13 @@
     const fileInput   = document.getElementById("file");
     const attachBtn   = document.getElementById("attach");
     const attachedDiv = document.getElementById("attached");
+    const srStatus    = document.getElementById("srStatus");
 
     const attached = new Map();   // key -> File
     const transcript = [];        // clean record of the visible conversation, for "Save"
+
+    /** Announce a transient status (e.g. "Rowdy is thinking") to screen readers. */
+    function announce(msg) { if (srStatus) srStatus.textContent = msg; }
 
     /* ---------- Math rendering (KaTeX) -------------------------- */
     function renderMath(el) {
@@ -1479,12 +1486,15 @@
     /* ====================================================================
        SAVE CONVERSATION (.txt) — for showing an instructor
     ==================================================================== */
+    // sessionStorage (not local): survives a refresh / mobile tab reload within
+    // the same session, but a genuine fresh open starts clean and shows the
+    // "Howdy!" welcome screen with Rowdy.
     const STORE_KEY = "rowdy_transcript";
 
     function persistTranscript() {
       try {
         const slim = transcript.slice(-200).map((x) => ({ role: x.role, text: x.text, meta: x.meta, t: x.t.toISOString() }));
-        localStorage.setItem(STORE_KEY, JSON.stringify(slim));
+        sessionStorage.setItem(STORE_KEY, JSON.stringify(slim));
       } catch (e) { /* storage unavailable — degrade silently */ }
     }
 
@@ -1492,7 +1502,7 @@
     function loadSavedTranscript() {
       let arr;
       try {
-        const raw = localStorage.getItem(STORE_KEY);
+        const raw = sessionStorage.getItem(STORE_KEY);
         if (!raw) return;
         arr = JSON.parse(raw);
       } catch (e) { return; }
@@ -1561,7 +1571,7 @@
       attached.clear(); renderAttached();
       calcLog = []; updateShareBar();
       transcript.length = 0;
-      try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+      try { sessionStorage.removeItem(STORE_KEY); } catch (e) {}
       input.value = ""; autoGrow(); input.focus();
     });
 
@@ -1605,6 +1615,7 @@
       sendBtn.disabled = true;
 
       const typingTurn = showTyping();
+      announce("Rowdy is thinking, one moment.");
       try {
         const r = await fetch("/api/chat", { method: "POST", body });
         if (!r.ok) throw new Error((await r.text()) || r.statusText);
@@ -1616,6 +1627,7 @@
         typingTurn.remove();
         add("bot", "Well, shoot — looks like somethin' hiccuped on my end. Give it another try in a sec, and if it keeps actin' up you can email tutoring@crowder.edu.");
       } finally {
+        announce("");
         sendBtn.disabled = false;
         input.focus();
       }
