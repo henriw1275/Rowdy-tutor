@@ -3,19 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Rowdy the Homework Helper</title>
+  <title>Rowdy, Your Crowder Guide</title>
   <link rel="icon" type="image/png" href="/static/rowdy.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- KaTeX: render Rowdy's LaTeX math ($...$ inline, $$...$$ display) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
-  <!-- math.js: powers the embedded scientific calculator -->
-  <script defer src="https://cdn.jsdelivr.net/npm/mathjs@15.2.0/lib/browser/math.js" crossorigin="anonymous"></script>
-
   <style>
     :root {
       /* Warm collegiate palette --------------------------------- */
@@ -55,39 +47,6 @@
       --font-display: 'Fraunces', Georgia, serif;
       --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
       --font-hand:    'Caveat', 'Comic Sans MS', cursive;
-
-      /* Accessibility ------------------------------------------ */
-      --font-scale: 1;        /* low-vision text scaling */
-    }
-
-    /* High-contrast mode: stronger ink, white surfaces, no soft grays */
-    body.high-contrast {
-      --bg:        #ffffff;
-      --bg-soft:   #ffffff;
-      --surface:   #ffffff;
-      --ink:       #000000;
-      --ink-soft:  #1a1a1a;
-      --ink-faded: #333333;
-      --primary:   #0a4f7a;
-      --primary-hov:#063a5c;
-      --primary-soft:#dcecf6;
-      --accent:    #8a5a10;
-      --accent-soft:#f0dcb0;
-      --border:    #000000;
-      --border-soft:#555555;
-    }
-    body.high-contrast { background-image: none !important; }
-    body.high-contrast .bot .msg { border-width: 2px; border-color: var(--ink); }
-    body.high-contrast .me .msg  { background: #0a4f7a; }
-
-    /* Readable / dyslexia-friendly font */
-    body.readable-font {
-      --font-body: 'Verdana', 'Tahoma', 'Comic Sans MS', system-ui, sans-serif;
-    }
-    body.readable-font .msg {
-      letter-spacing: 0.02em;
-      word-spacing: 0.08em;
-      line-height: 1.7;
     }
 
     * { box-sizing: border-box; }
@@ -97,8 +56,10 @@
       color: var(--ink);
       background: var(--bg);
       background-image:
+        /* warm spotlight glow */
         radial-gradient(ellipse 80% 50% at 50% 0%,    rgba(201, 139, 43, 0.10), transparent 60%),
         radial-gradient(ellipse 70% 60% at 50% 100%,  rgba(30, 111, 168, 0.06), transparent 60%),
+        /* very faint paper grain */
         repeating-linear-gradient(
           45deg,
           rgba(120, 80, 40, 0.012) 0 2px,
@@ -112,7 +73,6 @@
       width: 100%;
       max-width: 760px;
       height: 100vh;
-      height: 100dvh;
       display: flex;
       flex-direction: column;
       background: var(--bg-soft);
@@ -131,9 +91,10 @@
         linear-gradient(135deg, #143f63 0%, #1e6fa8 60%, #2a85c4 100%);
       color: #ffffff;
       position: relative;
-      overflow: visible;
+      overflow: hidden;
     }
     header::after {
+      /* subtle gold underline */
       content: "";
       position: absolute;
       left: 0; right: 0; bottom: 0;
@@ -146,32 +107,39 @@
       opacity: 0.85;
     }
 
-    .header-logo {
-      width: 54px; height: 54px;
+    .header-avatar {
+      position: relative;
+      width: 56px; height: 56px;
       border-radius: var(--r-md);
-      background: #ffffff;
+      background: var(--surface);
       flex-shrink: 0;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.85);
       display: grid;
       place-items: center;
-      padding: 5px;
-      border: 2px solid rgba(255, 255, 255, 0.7);
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+      padding: 5px;
     }
-    .header-logo img {
+    .header-avatar .fallback {
+      position: absolute; inset: 0;
+      display: grid; place-items: center;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 26px;
+      color: var(--primary);
+    }
+    .header-avatar img {
+      position: relative;
       width: 100%; height: 100%;
       object-fit: contain;
     }
 
-    .title-block { display: flex; flex-direction: column; line-height: 1.15; flex: 1; min-width: 0; }
+    .title-block { display: flex; flex-direction: column; line-height: 1.15; }
     .title {
       font-family: var(--font-display);
       font-weight: 600;
       font-size: 21px;
       letter-spacing: -0.015em;
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
     .subtitle {
       font-size: 12.5px;
@@ -180,117 +148,6 @@
       letter-spacing: 0.04em;
       text-transform: uppercase;
       font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* Accessibility button in header */
-    .a11y-btn {
-      flex-shrink: 0;
-      width: 42px; height: 42px;
-      border-radius: var(--r-md);
-      border: 1.5px solid rgba(255,255,255,0.45);
-      background: rgba(255,255,255,0.12);
-      color: #fff;
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 17px;
-      cursor: pointer;
-      display: grid; place-items: center;
-      transition: background 0.15s, transform 0.1s;
-    }
-    .a11y-btn:hover { background: rgba(255,255,255,0.22); }
-    .a11y-btn:active { transform: scale(0.94); }
-
-    /* Accessibility popover */
-    .a11y-menu {
-      position: absolute;
-      top: 70px; right: 16px;
-      width: 290px;
-      max-width: calc(100vw - 32px);
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--r-lg);
-      box-shadow: var(--shadow-lg);
-      padding: 16px;
-      z-index: 40;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      color: var(--ink);
-    }
-    .a11y-menu[hidden] { display: none; }
-    .a11y-title {
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: 15px;
-      color: var(--ink);
-      margin: 0;
-    }
-    .a11y-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      font-size: 14px;
-      font-weight: 500;
-    }
-    .a11y-row label { flex: 1; }
-    .stepper { display: inline-flex; align-items: center; gap: 6px; }
-    .stepper button {
-      width: 30px; height: 30px;
-      border: 1.5px solid var(--border);
-      background: var(--bg-soft);
-      border-radius: var(--r-sm);
-      cursor: pointer;
-      font-weight: 700;
-      color: var(--ink);
-      display: grid; place-items: center;
-    }
-    .stepper button:hover { border-color: var(--primary); color: var(--primary); }
-    .stepper .val { min-width: 40px; text-align: center; font-size: 13px; color: var(--ink-soft); }
-
-    /* Toggle switch */
-    .switch { position: relative; width: 44px; height: 26px; flex-shrink: 0; }
-    .switch input {
-      position: absolute;
-      inset: 0;
-      width: 100%; height: 100%;
-      margin: 0;
-      opacity: 0;
-      cursor: pointer;
-      z-index: 2;
-    }
-    .switch .track {
-      position: absolute; inset: 0;
-      background: var(--border);
-      border-radius: var(--r-full);
-      transition: background 0.18s;
-      pointer-events: none;
-    }
-    .switch .track::before {
-      content: "";
-      position: absolute;
-      width: 20px; height: 20px;
-      left: 3px; top: 3px;
-      background: #fff;
-      border-radius: var(--r-full);
-      box-shadow: var(--shadow-sm);
-      transition: transform 0.18s;
-    }
-    .switch input:checked + .track { background: var(--primary); }
-    .switch input:checked + .track::before { transform: translateX(18px); }
-    .switch input:focus-visible + .track { box-shadow: 0 0 0 3px rgba(30,111,168,0.35); }
-
-    .a11y-select {
-      font: inherit;
-      font-size: 13px;
-      padding: 6px 8px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--r-sm);
-      background: var(--bg-soft);
-      color: var(--ink);
     }
 
     /* ===== Message log ====================================== */
@@ -344,13 +201,12 @@
       object-fit: cover;
     }
 
-    .bubble-wrap { display: flex; flex-direction: column; max-width: 78%; }
-
     .msg {
+      max-width: 78%;
       padding: 12px 16px;
       border-radius: var(--r-lg);
       line-height: 1.55;
-      font-size: calc(15px * var(--font-scale));
+      font-size: 15px;
       white-space: pre-wrap;
       word-wrap: break-word;
       position: relative;
@@ -368,6 +224,7 @@
       border-bottom-left-radius: 6px;
       box-shadow: var(--shadow-sm);
     }
+    /* speech-bubble tail on bot messages */
     .bot .msg::before {
       content: "";
       position: absolute;
@@ -380,15 +237,6 @@
       transform: rotate(45deg);
       border-bottom-left-radius: 3px;
     }
-    body.high-contrast .bot .msg::before { border-color: var(--ink); }
-
-    /* KaTeX sizing inside bubbles */
-    .msg .katex { font-size: 1.05em; }
-    .msg .katex-display { margin: 0.4em 0; overflow-x: auto; overflow-y: hidden; }
-    .msg a { color: var(--primary); text-decoration: underline; word-break: break-word; }
-    .me .msg a { color: #ffffff; }
-    body.high-contrast .msg a { color: var(--primary); }
-    body.high-contrast .me .msg a { color: #ffffff; }
 
     .meta {
       font-size: 12.5px;
@@ -396,28 +244,6 @@
       opacity: 0.78;
       font-style: italic;
     }
-
-    /* Read-aloud (TTS) button under bot messages */
-    .speak-btn {
-      align-self: flex-start;
-      margin-top: 5px;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 9px 3px 7px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      border-radius: var(--r-full);
-      font: inherit;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--ink-soft);
-      cursor: pointer;
-      transition: border-color 0.15s, color 0.15s, background 0.15s;
-    }
-    .speak-btn:hover { border-color: var(--primary); color: var(--primary); }
-    .speak-btn.speaking { border-color: var(--accent); color: #6b4515; background: var(--accent-soft); }
-    .speak-btn svg { width: 14px; height: 14px; }
 
     /* ===== Typing indicator ================================== */
     .typing {
@@ -449,9 +275,10 @@
       padding: 32px 24px 48px;
       gap: 22px;
       text-align: center;
-      overflow-y: auto;
     }
     .empty.hidden { display: none; }
+
+    /* #log starts hidden; .visible reveals it as a flex column. */
     #log:not(.visible) { display: none; }
 
     .empty-avatar {
@@ -460,7 +287,9 @@
       background: var(--surface);
       overflow: hidden;
       border: 4px solid var(--surface);
-      box-shadow: var(--shadow-md), 0 0 0 3px var(--accent-soft);
+      box-shadow:
+        var(--shadow-md),
+        0 0 0 3px var(--accent-soft);
       display: grid;
       place-items: center;
       position: relative;
@@ -495,28 +324,12 @@
     .empty-tagline {
       font-family: var(--font-display);
       font-weight: 500;
-      font-size: calc(17px * var(--font-scale));
+      font-size: 17px;
       color: var(--ink-soft);
       max-width: 360px;
       line-height: 1.45;
       margin: -8px 0 6px;
     }
-    .empty-hint {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      max-width: 430px;
-      margin-top: 2px;
-      padding: 11px 15px;
-      font-size: calc(13px * var(--font-scale));
-      line-height: 1.45;
-      color: var(--ink-soft);
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--r-md);
-      text-align: left;
-    }
-    .empty-hint svg { width: 17px; height: 17px; flex-shrink: 0; color: var(--primary); }
 
     .prompts {
       display: grid;
@@ -547,33 +360,10 @@
       border-color: var(--accent);
       box-shadow: var(--shadow-md);
     }
-    .prompt-chip .emoji { font-size: 18px; flex-shrink: 0; }
-
-    /* ===== Calculator-shared indicator ===================== */
-    #calc-share {
-      display: none;
-      align-items: center;
-      gap: 8px;
-      margin: 0 22px;
-      padding: 8px 12px;
-      background: var(--primary-soft);
-      border: 1px solid var(--primary);
-      border-radius: var(--r-md);
-      font-size: 12.5px;
-      color: var(--primary-hov);
-      font-weight: 500;
+    .prompt-chip .emoji {
+      font-size: 18px;
+      flex-shrink: 0;
     }
-    #calc-share.show { display: flex; }
-    #calc-share .grow { flex: 1; }
-    #calc-share button {
-      all: unset;
-      cursor: pointer;
-      font-weight: 600;
-      color: var(--primary-hov);
-      opacity: 0.8;
-      text-decoration: underline;
-    }
-    #calc-share button:hover { opacity: 1; }
 
     /* ===== Attachment pills ================================ */
     #attached {
@@ -583,7 +373,9 @@
       padding: 0 22px;
       background: var(--bg-soft);
     }
-    #attached:not(:empty) { padding: 10px 22px 0; }
+    #attached:not(:empty) {
+      padding: 10px 22px 0;
+    }
     .pill {
       display: inline-flex;
       align-items: center;
@@ -597,7 +389,11 @@
       color: #6b4515;
       max-width: 240px;
     }
-    .pill .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pill .name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     .pill button {
       all: unset;
       cursor: pointer;
@@ -609,96 +405,6 @@
       opacity: 0.65;
     }
     .pill button:hover { opacity: 1; background: rgba(107, 69, 21, 0.12); }
-
-    /* ===== Scientific calculator =========================== */
-    #calc {
-      margin: 0 18px 4px;
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--r-lg);
-      box-shadow: var(--shadow-md);
-      padding: 12px;
-      animation: rise 0.22s cubic-bezier(0.2,0.8,0.2,1);
-    }
-    #calc[hidden] { display: none; }
-    .calc-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    .calc-head .label {
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: 13px;
-      color: var(--ink-soft);
-    }
-    .calc-close {
-      all: unset;
-      cursor: pointer;
-      width: 32px; height: 32px;
-      display: grid; place-items: center;
-      border-radius: var(--r-full);
-      font-size: 22px;
-      line-height: 1;
-      color: var(--ink-soft);
-      border: 1.5px solid var(--border);
-    }
-    .calc-close:hover { color: #b4452f; border-color: #b4452f; background: rgba(180,69,47,0.08); }
-    .calc-close:active { transform: scale(0.92); }
-    .calc-display {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--r-md);
-      padding: 10px 12px;
-      margin-bottom: 10px;
-      text-align: right;
-      min-height: 56px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 2px;
-    }
-    .calc-expr {
-      font-family: 'Fraunces', Georgia, serif;
-      font-size: calc(18px * var(--font-scale));
-      color: var(--ink);
-      word-break: break-all;
-      min-height: 22px;
-    }
-    .calc-result {
-      font-size: calc(14px * var(--font-scale));
-      color: var(--ink-soft);
-      font-weight: 600;
-      min-height: 18px;
-    }
-    .calc-result.error { color: #b4452f; font-weight: 500; }
-    .calc-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 7px;
-    }
-    .calc-grid button {
-      font: inherit;
-      font-weight: 600;
-      font-size: 15px;
-      padding: 12px 0;
-      border-radius: var(--r-md);
-      border: 1.5px solid var(--border);
-      background: var(--bg-soft);
-      color: var(--ink);
-      cursor: pointer;
-      transition: transform 0.08s, background 0.12s, border-color 0.12s;
-      min-height: 44px;
-    }
-    .calc-grid button:hover { border-color: var(--primary); }
-    .calc-grid button:active { transform: scale(0.95); }
-    .calc-grid button.fn { background: var(--primary-soft); color: var(--primary-hov); font-size: 13.5px; }
-    .calc-grid button.op { color: var(--primary); }
-    .calc-grid button.warn { color: #b4452f; }
-    .calc-grid button.eq { background: linear-gradient(135deg, var(--primary), var(--primary-hov)); color: #fff; border-color: transparent; }
-    .calc-grid button.span2 { grid-column: span 2; }
-    .calc-grid button.mode { background: var(--accent-soft); color: #6b4515; border-color: var(--accent); font-size: 13px; }
 
     /* ===== Composer ========================================= */
     form {
@@ -715,7 +421,10 @@
       top: 0; left: 18px; right: 18px;
       height: 1px;
       background: linear-gradient(90deg,
-        transparent 0%, var(--border) 20%, var(--border) 80%, transparent 100%);
+        transparent 0%,
+        var(--border) 20%,
+        var(--border) 80%,
+        transparent 100%);
     }
 
     .iconbtn {
@@ -728,21 +437,11 @@
       color: var(--ink-soft);
       display: grid;
       place-items: center;
-      transition: border-color 0.15s, color 0.15s, transform 0.1s, background 0.15s;
+      transition: border-color 0.15s, color 0.15s, transform 0.1s;
     }
     .iconbtn:hover { border-color: var(--primary); color: var(--primary); }
     .iconbtn:active { transform: scale(0.94); }
     .iconbtn svg { width: 18px; height: 18px; }
-    .iconbtn[aria-pressed="true"] { background: var(--primary); color: #fff; border-color: var(--primary); }
-    .iconbtn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .iconbtn.listening {
-      background: #b4452f; color: #fff; border-color: #b4452f;
-      animation: pulse 1.2s infinite;
-    }
-    @keyframes pulse {
-      0%,100% { box-shadow: 0 0 0 0 rgba(180,69,47,0.5); }
-      50%     { box-shadow: 0 0 0 6px rgba(180,69,47,0); }
-    }
 
     .composer-wrap {
       flex: 1;
@@ -763,7 +462,7 @@
       border: 0;
       background: transparent;
       font: inherit;
-      font-size: calc(15px * var(--font-scale));
+      font-size: 15px;
       color: var(--ink);
       resize: none;
       max-height: 140px;
@@ -771,23 +470,6 @@
       outline: none;
     }
     textarea::placeholder { color: var(--ink-faded); }
-
-    .mic {
-      flex-shrink: 0;
-      width: 36px; height: 36px;
-      margin-right: 4px;
-      border: 0;
-      background: transparent;
-      border-radius: var(--r-sm);
-      cursor: pointer;
-      color: var(--ink-faded);
-      display: grid; place-items: center;
-      transition: color 0.15s, background 0.15s;
-    }
-    .mic:hover { color: var(--primary); background: var(--primary-soft); }
-    .mic.listening { color: #fff; background: #b4452f; animation: pulse 1.2s infinite; }
-    .mic:disabled { opacity: 0.4; cursor: not-allowed; }
-    .mic svg { width: 18px; height: 18px; }
 
     .send {
       width: 42px; height: 42px;
@@ -802,120 +484,43 @@
       transition: transform 0.1s, box-shadow 0.15s, opacity 0.15s;
       box-shadow: 0 2px 8px -2px rgba(30, 111, 168, 0.5);
     }
-    .send:hover:not(:disabled) { box-shadow: 0 4px 14px -2px rgba(30, 111, 168, 0.55); }
+    .send:hover:not(:disabled) {
+      box-shadow: 0 4px 14px -2px rgba(30, 111, 168, 0.55);
+    }
     .send:active:not(:disabled) { transform: scale(0.94); }
     .send:disabled { opacity: 0.45; cursor: wait; }
     .send svg { width: 18px; height: 18px; }
 
-    .sr-only {
-      position: absolute; width: 1px; height: 1px;
-      padding: 0; margin: -1px; overflow: hidden;
-      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
-    }
-
-    /* ===== Reduced motion ================================== */
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-    }
-    body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after {
-      animation: none !important; transition: none !important; scroll-behavior: auto !important;
-    }
-
     /* ===== Mobile =========================================== */
     @media (max-width: 520px) {
-      header { padding: 14px 16px; gap: 10px; }
-      .header-logo { width: 46px; height: 46px; }
+      header { padding: 14px 16px; gap: 12px; }
+      .header-avatar { width: 48px; height: 48px; }
       .title { font-size: 19px; }
       .subtitle { font-size: 11.5px; }
       #log { padding: 18px 14px; gap: 14px; }
-      .bubble-wrap { max-width: 86%; }
+      .msg { max-width: 82%; font-size: 14.5px; }
       form { padding: 12px 14px 14px; }
-      textarea { font-size: max(16px, calc(15px * var(--font-scale))); }
       .empty-avatar { width: 108px; height: 108px; }
       .empty-greeting { font-size: 38px; }
+      .empty-tagline { font-size: 15.5px; }
       .prompts { grid-template-columns: 1fr; }
-      #calc, #calc-share, #attached { margin-left: 14px; margin-right: 14px; }
-      #calc { padding: 10px; }
-      .calc-grid { gap: 6px; }
-      .calc-grid button { padding: 9px 0; min-height: 40px; font-size: 14px; }
-      .calc-grid button.fn { font-size: 12.5px; }
-      .calc-display { min-height: 48px; padding: 8px 10px; }
     }
   </style>
 </head>
 <body>
   <div class="shell">
     <header>
-      <div class="header-logo">
-        <img src="/static/crowder-logo.png" alt="Crowder College" onerror="this.style.display='none'" />
+      <div class="header-avatar">
+        <span class="fallback">C</span>
+        <img src="/static/crowder.png" alt="Crowder College" onerror="this.remove()" />
       </div>
       <div class="title-block">
-        <span class="title">Rowdy the Homework Helper</span>
-        <span class="subtitle">Crowder College tutoring</span>
+        <span class="title">Rowdy, Your Crowder Guide</span>
+        <span class="subtitle">Programs · Applying · Getting Started</span>
       </div>
-      <button id="saveBtn" class="a11y-btn" type="button" title="Save conversation as a text file" aria-label="Save conversation as a text file">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-      </button>
-      <button id="resetBtn" class="a11y-btn" type="button" title="Start a new conversation" aria-label="Start a new conversation">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:19px;height:19px;">
-          <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>
-        </svg>
-      </button>
-      <button id="a11yBtn" class="a11y-btn" type="button" aria-haspopup="true" aria-expanded="false"
-              aria-controls="a11yMenu" title="Accessibility options">Aa</button>
     </header>
 
-    <!-- Accessibility popover -->
-    <div id="a11yMenu" class="a11y-menu" role="dialog" aria-label="Accessibility options" hidden>
-      <p class="a11y-title">Accessibility</p>
-
-      <div class="a11y-row">
-        <label id="sizeLabel">Text size</label>
-        <span class="stepper" role="group" aria-labelledby="sizeLabel">
-          <button id="sizeDown" type="button" aria-label="Decrease text size">A−</button>
-          <span class="val" id="sizeVal">100%</span>
-          <button id="sizeUp" type="button" aria-label="Increase text size">A+</button>
-        </span>
-      </div>
-
-      <div class="a11y-row">
-        <label for="tHighContrast">High contrast</label>
-        <span class="switch"><input type="checkbox" id="tHighContrast" /><span class="track" aria-hidden="true"></span></span>
-      </div>
-
-      <div class="a11y-row">
-        <label for="tReadable">Readable font</label>
-        <span class="switch"><input type="checkbox" id="tReadable" /><span class="track" aria-hidden="true"></span></span>
-      </div>
-
-      <div class="a11y-row">
-        <label for="tReduceMotion">Reduce motion</label>
-        <span class="switch"><input type="checkbox" id="tReduceMotion" /><span class="track" aria-hidden="true"></span></span>
-      </div>
-
-      <div class="a11y-row">
-        <label for="tAutoRead">Read replies aloud</label>
-        <span class="switch"><input type="checkbox" id="tAutoRead" /><span class="track" aria-hidden="true"></span></span>
-      </div>
-
-      <div class="a11y-row">
-        <label for="voiceLang">Voice language</label>
-        <select id="voiceLang" class="a11y-select" aria-label="Language for voice input and read-aloud">
-          <option value="en-US">English</option>
-          <option value="es-ES">Español</option>
-          <option value="fr-FR">Français</option>
-          <option value="de-DE">Deutsch</option>
-          <option value="pt-BR">Português</option>
-          <option value="vi-VN">Tiếng Việt</option>
-          <option value="zh-CN">中文</option>
-          <option value="ar-SA">العربية</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Empty state -->
+    <!-- Empty state: shown until first message ------------------- -->
     <div id="empty" class="empty">
       <div class="empty-avatar">
         <span class="fallback">R</span>
@@ -923,98 +528,31 @@
       </div>
       <h1 class="empty-greeting">Howdy!</h1>
       <p class="empty-tagline">
-        I'm Rowdy, your Crowder College study buddy.<br />
-        Ask me anything you're working on.
+        I'm Rowdy, your Crowder College guide.<br />
+        Ask me about programs, applying, or what's next.
       </p>
       <div class="prompts">
-        <button class="prompt-chip" data-prompt="I'm stuck on a problem — can you walk me through it?">
-          <span class="emoji">🤔</span><span>I'm stuck on something</span>
+        <button class="prompt-chip" data-prompt="What programs does Crowder offer?">
+          <span class="emoji">🎓</span>
+          <span>Explore programs</span>
         </button>
-        <button class="prompt-chip" data-prompt="I'd like you to quiz me. What can you quiz me on?">
-          <span class="emoji">📚</span><span>Quiz me</span>
+        <button class="prompt-chip" data-prompt="Help me start my application.">
+          <span class="emoji">📝</span>
+          <span>Help me apply</span>
         </button>
-        <button class="prompt-chip" data-prompt="Can you explain a concept to me in plain English?">
-          <span class="emoji">💡</span><span>Explain something simply</span>
+        <button class="prompt-chip" data-prompt="What deadlines do I need to know about?">
+          <span class="emoji">📅</span>
+          <span>Important dates</span>
         </button>
-        <button class="prompt-chip" data-prompt="I've got a math problem to work through. I can type it out or use the calculator here.">
-          <span class="emoji">🧮</span><span>Work a math problem</span>
+        <button class="prompt-chip" data-prompt="What jobs can I get with a Crowder degree?">
+          <span class="emoji">💼</span>
+          <span>Career options</span>
         </button>
-      </div>
-      <p class="empty-hint">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-        <span>Need a copy for your instructor? Tap the download button in the top bar anytime to save this chat as a file.</span>
-      </p>
-    </div>
-
-    <!-- Message log -->
-    <div id="log" role="log" aria-live="polite" aria-label="Conversation with Rowdy"></div>
-
-    <!-- Screen-reader-only status (e.g. "Rowdy is thinking") -->
-    <div id="srStatus" class="sr-only" role="status" aria-live="polite"></div>
-
-    <!-- Calculator-shared notice -->
-    <div id="calc-share" role="status">
-      <span class="grow"></span>
-      <button id="calcShareClear" type="button">Clear</button>
-    </div>
-
-    <!-- Scientific calculator -->
-    <div id="calc" role="group" aria-label="Scientific calculator" hidden>
-      <div class="calc-head">
-        <span class="label">Scientific calculator</span>
-        <span style="display:flex;align-items:center;gap:12px;">
-          <span class="label" id="calcModeLabel">Mode: DEG</span>
-          <button id="calcClose" type="button" class="calc-close" aria-label="Close calculator">×</button>
-        </span>
-      </div>
-      <div class="calc-display">
-        <div class="calc-expr" id="calcExpr" aria-live="polite">0</div>
-        <div class="calc-result" id="calcResult"></div>
-      </div>
-      <div class="calc-grid" id="calcGrid">
-        <button type="button" class="mode" data-mode aria-label="Toggle degrees or radians">DEG</button>
-        <button type="button" class="warn" data-back aria-label="Backspace">⌫</button>
-        <button type="button" class="fn" data-ins="(" aria-label="Open parenthesis">(</button>
-        <button type="button" class="fn" data-ins=")" aria-label="Close parenthesis">)</button>
-
-        <button type="button" class="fn" data-ins="sin(" aria-label="sine">sin</button>
-        <button type="button" class="fn" data-ins="cos(" aria-label="cosine">cos</button>
-        <button type="button" class="fn" data-ins="tan(" aria-label="tangent">tan</button>
-        <button type="button" class="op" data-ins="^" aria-label="to the power of">x^y</button>
-
-        <button type="button" class="fn" data-ins="ln(" aria-label="natural log">ln</button>
-        <button type="button" class="fn" data-ins="log(" aria-label="log base 10">log</button>
-        <button type="button" class="fn" data-ins="√(" aria-label="square root">√</button>
-        <button type="button" class="fn" data-ins="π" aria-label="pi">π</button>
-
-        <button type="button" data-ins="7">7</button>
-        <button type="button" data-ins="8">8</button>
-        <button type="button" data-ins="9">9</button>
-        <button type="button" class="op" data-ins="÷" aria-label="divide">÷</button>
-
-        <button type="button" data-ins="4">4</button>
-        <button type="button" data-ins="5">5</button>
-        <button type="button" data-ins="6">6</button>
-        <button type="button" class="op" data-ins="×" aria-label="multiply">×</button>
-
-        <button type="button" data-ins="1">1</button>
-        <button type="button" data-ins="2">2</button>
-        <button type="button" data-ins="3">3</button>
-        <button type="button" class="op" data-ins="−" aria-label="minus">−</button>
-
-        <button type="button" data-ins="π" aria-label="pi" style="visibility:hidden">π</button>
-        <button type="button" data-ins="0">0</button>
-        <button type="button" data-ins=".">.</button>
-        <button type="button" class="op" data-ins="+" aria-label="plus">+</button>
-
-        <button type="button" data-ins="e" aria-label="Euler's number e">e</button>
-        <button type="button" data-neg aria-label="Toggle sign">±</button>
-        <button type="button" class="warn" data-clear aria-label="All clear">AC</button>
-        <button type="button" class="eq" data-eq aria-label="Equals">=</button>
       </div>
     </div>
+
+    <!-- Message log: hidden until first message ------------------ -->
+    <div id="log"></div>
 
     <div id="attached"></div>
 
@@ -1024,27 +562,14 @@
           <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
         </svg>
       </button>
-      <button id="calcBtn" class="iconbtn" type="button" title="Scientific calculator" aria-label="Open scientific calculator" aria-pressed="false" aria-controls="calc">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/>
-          <line x1="8" y1="10" x2="8" y2="10"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="16" y1="10" x2="16" y2="10"/>
-          <line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="18"/>
-          <line x1="8" y1="18" x2="12" y2="18"/>
-        </svg>
-      </button>
       <input id="file" type="file" multiple accept=".pdf,image/png,image/jpeg,image/gif,image/webp" hidden />
       <div class="composer-wrap">
-        <textarea id="m" rows="1" autocomplete="off" placeholder="Ask Rowdy anything…" aria-label="Message to Rowdy"></textarea>
-        <button id="mic" class="mic" type="button" title="Voice input" aria-label="Start voice input">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
-          </svg>
-        </button>
+        <textarea id="m" rows="1" autocomplete="off" placeholder="Ask Rowdy anything…"></textarea>
       </div>
-      <button id="b" class="send" type="submit" aria-label="Send message">
+      <button id="b" class="send" type="submit" aria-label="Send">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
         </svg>
       </button>
     </form>
@@ -1059,98 +584,44 @@
     const fileInput   = document.getElementById("file");
     const attachBtn   = document.getElementById("attach");
     const attachedDiv = document.getElementById("attached");
-    const srStatus    = document.getElementById("srStatus");
 
-    const attached = new Map();   // key -> File
-    const transcript = [];        // clean record of the visible conversation, for "Save"
+    // Track attached files in a Map so we can remove them individually.
+    const attached = new Map();   // key: unique id, value: File
 
-    /** Announce a transient status (e.g. "Rowdy is thinking") to screen readers. */
-    function announce(msg) { if (srStatus) srStatus.textContent = msg; }
-
-    /* ---------- Math rendering (KaTeX) -------------------------- */
-    function renderMath(el) {
-      if (!window.renderMathInElement) return;
-      try {
-        window.renderMathInElement(el, {
-          delimiters: [
-            { left: "$$", right: "$$", display: true },
-            { left: "$",  right: "$",  display: false },
-            { left: "\\(", right: "\\)", display: false },
-            { left: "\\[", right: "\\]", display: true },
-          ],
-          throwOnError: false,
-        });
-      } catch (e) { /* leave text as-is on failure */ }
-    }
-
-    /* Turn plain URLs and emails into clickable links — operates on text
-       nodes only (no innerHTML), so it can't inject markup. Runs after
-       KaTeX so it leaves rendered math alone. */
-    function linkify(el) {
-      const re = /(https?:\/\/[^\s<]+|[\w.+-]+@[\w.-]+\.[a-zA-Z]{2,})/g;
-      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
-      const nodes = [];
-      while (walker.nextNode()) {
-        const p = walker.currentNode.parentNode;
-        if (p && (p.tagName === "A" || p.closest(".katex"))) continue;
-        nodes.push(walker.currentNode);
-      }
-      for (const node of nodes) {
-        const text = node.nodeValue;
-        re.lastIndex = 0;
-        if (!re.test(text)) continue;
-        re.lastIndex = 0;
-        const frag = document.createDocumentFragment();
-        let last = 0, m;
-        while ((m = re.exec(text))) {
-          let token = m[0];
-          token = token.replace(/[.,;:!?)\]]+$/, "");   // trim trailing punctuation
-          if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
-          const a = document.createElement("a");
-          a.textContent = token;
-          a.href = token.includes("@") && !token.startsWith("http") ? "mailto:" + token : token;
-          if (!token.includes("@")) { a.target = "_blank"; a.rel = "noopener noreferrer"; }
-          frag.appendChild(a);
-          last = m.index + token.length;
-        }
-        if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
-        node.parentNode.replaceChild(frag, node);
-      }
-    }
-
-    /* ---------- View helpers ------------------------------------ */
+    /** Reveal the message log + hide the empty state on first message. */
     function ensureLogVisible() {
       if (log.classList.contains("visible")) return;
       empty.classList.add("hidden");
       log.classList.add("visible");
     }
 
+    /** Build the inner content of a bot bubble:
+     *  mini-avatar + message text (+ optional meta). */
     function makeBotTurn() {
       const turn = document.createElement("div");
       turn.className = "turn bot";
+
       const avatar = document.createElement("div");
       avatar.className = "mini-avatar";
       avatar.innerHTML =
         '<span class="fallback">R</span>' +
         '<img src="/static/rowdy.png" alt="" onerror="this.remove()" />';
-      const wrap = document.createElement("div");
-      wrap.className = "bubble-wrap";
+
       const msg = document.createElement("div");
       msg.className = "msg";
-      wrap.appendChild(msg);
+
       turn.appendChild(avatar);
-      turn.appendChild(wrap);
-      return { turn, wrap, msg };
+      turn.appendChild(msg);
+      return { turn, msg };
     }
 
-    function renderTurn(role, text, meta, opts) {
-      opts = opts || {};
+    /** Add a user or bot message to the log. */
+    function add(role, text, meta) {
       ensureLogVisible();
+
       if (role === "user") {
         const turn = document.createElement("div");
         turn.className = "turn me";
-        const wrap = document.createElement("div");
-        wrap.className = "bubble-wrap";
         const msg = document.createElement("div");
         msg.className = "msg";
         msg.textContent = text;
@@ -1160,462 +631,113 @@
           m.textContent = meta;
           msg.appendChild(m);
         }
-        wrap.appendChild(msg);
-        turn.appendChild(wrap);
+        turn.appendChild(msg);
         log.appendChild(turn);
-        renderMath(msg);
-        linkify(msg);
       } else {
-        const { turn, wrap, msg } = makeBotTurn();
+        const { turn, msg } = makeBotTurn();
         msg.textContent = text;
         log.appendChild(turn);
-        renderMath(msg);
-        linkify(msg);
-        addSpeakButton(wrap, text);
-        if (opts.speak) speak(text);
       }
       log.scrollTop = log.scrollHeight;
     }
 
-    function add(role, text, meta) {
-      renderTurn(role, text, meta, { speak: role === "bot" && autoRead });
-      transcript.push({ role, text, meta: meta || "", t: new Date() });
-      persistTranscript();
-    }
-
+    /** Show animated typing dots. Returns the turn element to remove later. */
     function showTyping() {
       ensureLogVisible();
       const { turn, msg } = makeBotTurn();
       msg.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+      turn.dataset.typing = "1";
       log.appendChild(turn);
       log.scrollTop = log.scrollHeight;
       return turn;
     }
 
-    /* ---------- Attachments ------------------------------------- */
+    /** Re-render the attached-file pills row from the `attached` map. */
     function renderAttached() {
       attachedDiv.innerHTML = "";
       for (const [id, file] of attached) {
         const pill = document.createElement("span");
         pill.className = "pill";
+
         const name = document.createElement("span");
         name.className = "name";
         name.textContent = file.name;
+
         const removeBtn = document.createElement("button");
         removeBtn.type = "button";
         removeBtn.setAttribute("aria-label", "Remove " + file.name);
         removeBtn.textContent = "×";
-        removeBtn.addEventListener("click", () => { attached.delete(id); renderAttached(); });
+        removeBtn.addEventListener("click", () => {
+          attached.delete(id);
+          renderAttached();
+        });
+
         pill.appendChild(name);
         pill.appendChild(removeBtn);
         attachedDiv.appendChild(pill);
       }
     }
 
+    /** Auto-grow the textarea up to its CSS max-height. */
     function autoGrow() {
       input.style.height = "auto";
       input.style.height = Math.min(input.scrollHeight, 140) + "px";
     }
 
-    /* ====================================================================
-       TEXT-TO-SPEECH (native SpeechSynthesis — no external API)
-    ==================================================================== */
-    const synth = window.speechSynthesis || null;
-    let autoRead = false;
-    let voiceLang = "en-US";
-
-    function forSpeech(t) {
-      return t
-        .replace(/\$\$([^$]*)\$\$/g, " $1 ")
-        .replace(/\$([^$]*)\$/g, " $1 ")
-        .replace(/\\frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, " $1 over $2 ")
-        .replace(/\\sqrt\s*\{([^{}]*)\}/g, " square root of $1 ")
-        .replace(/\\pm/g, " plus or minus ")
-        .replace(/\\times/g, " times ")
-        .replace(/\\cdot/g, " times ")
-        .replace(/\^\s*\{?([^{}\s]+)\}?/g, " to the power $1 ")
-        .replace(/[_{}\\]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-    }
-
-    let currentSpeakBtn = null;
-    function speak(text, btn) {
-      if (!synth) return;
-      synth.cancel();
-      if (currentSpeakBtn) currentSpeakBtn.classList.remove("speaking");
-      const u = new SpeechSynthesisUtterance(forSpeech(text));
-      u.lang = voiceLang;
-      if (btn) {
-        currentSpeakBtn = btn;
-        btn.classList.add("speaking");
-        u.onend = u.onerror = () => btn.classList.remove("speaking");
-      }
-      synth.speak(u);
-    }
-
-    function addSpeakButton(wrap, text) {
-      if (!synth) return;
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "speak-btn";
-      btn.setAttribute("aria-label", "Read this reply aloud");
-      btn.innerHTML =
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-        '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>' +
-        '<span>Listen</span>';
-      btn.addEventListener("click", () => {
-        if (btn.classList.contains("speaking")) {
-          synth.cancel();
-          btn.classList.remove("speaking");
-        } else {
-          speak(text, btn);
-        }
-      });
-      wrap.appendChild(btn);
-    }
-
-    /* ====================================================================
-       SPEECH-TO-TEXT (native Web Speech API — no external API)
-    ==================================================================== */
-    const micBtn = document.getElementById("mic");
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recog = null, listening = false, baseText = "";
-
-    if (!SR) {
-      micBtn.disabled = true;
-      micBtn.title = "Voice input isn't supported in this browser (try Chrome or Edge)";
-    } else {
-      recog = new SR();
-      recog.interimResults = true;
-      recog.continuous = false;
-      recog.onresult = (e) => {
-        let txt = "";
-        for (let i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript;
-        input.value = (baseText ? baseText + " " : "") + txt;
-        autoGrow();
-      };
-      recog.onend = () => { listening = false; micBtn.classList.remove("listening"); micBtn.setAttribute("aria-label", "Start voice input"); };
-      recog.onerror = () => { listening = false; micBtn.classList.remove("listening"); };
-      micBtn.addEventListener("click", () => {
-        if (listening) { recog.stop(); return; }
-        baseText = input.value.trim();
-        recog.lang = voiceLang;
-        try { recog.start(); listening = true; micBtn.classList.add("listening"); micBtn.setAttribute("aria-label", "Stop voice input"); input.focus(); }
-        catch (e) { /* already started */ }
-      });
-    }
-
-    /* ====================================================================
-       SCIENTIFIC CALCULATOR  (math.js) — auto-shares each result with Rowdy
-    ==================================================================== */
-    const calcPanel  = document.getElementById("calc");
-    const calcBtn    = document.getElementById("calcBtn");
-    const calcExpr   = document.getElementById("calcExpr");
-    const calcResult = document.getElementById("calcResult");
-    const calcGrid   = document.getElementById("calcGrid");
-    const calcModeBtn= calcGrid.querySelector("[data-mode]");
-    const calcModeLbl= document.getElementById("calcModeLabel");
-    const shareBar   = document.getElementById("calc-share");
-    const shareText  = shareBar.querySelector(".grow");
-    const shareClear = document.getElementById("calcShareClear");
-
-    let expr = "";
-    let degMode = true;
-    let justEvaluated = false;
-    let calcLog = [];   // [{expr, mode, result}] — sent with next message
-
-    function refreshExpr() { calcExpr.textContent = expr || "0"; }
-
-    function toEval(s) {
-      return s
-        .replace(/×/g, "*")
-        .replace(/÷/g, "/")
-        .replace(/−/g, "-")
-        .replace(/π/g, "pi")
-        .replace(/√\(/g, "sqrt(")
-        .replace(/log\(/g, "log10(");   // ln stays; defined in scope below
-    }
-
-    function evaluate() {
-      if (!expr.trim()) return;
-      if (!window.math) { calcResult.textContent = "Calculator still loading…"; return; }
-      const scope = {
-        ln: (x) => Math.log(x),
-        sin: degMode ? (x) => Math.sin(x * Math.PI / 180) : Math.sin,
-        cos: degMode ? (x) => Math.cos(x * Math.PI / 180) : Math.cos,
-        tan: degMode ? (x) => Math.tan(x * Math.PI / 180) : Math.tan,
-      };
-      try {
-        const raw = window.math.evaluate(toEval(expr), scope);
-        const num = (typeof raw === "number") ? parseFloat(raw.toPrecision(12)) : raw;
-        const out = String(num);
-        calcResult.classList.remove("error");
-        calcResult.textContent = "= " + out;
-        calcLog.push({ expr: expr, mode: degMode ? "DEG" : "RAD", result: out });
-        updateShareBar();
-        expr = out;
-        justEvaluated = true;
-      } catch (err) {
-        calcResult.classList.add("error");
-        calcResult.textContent = "Hmm — check that expression";
-      }
-    }
-
-    function insert(tok) {
-      if (justEvaluated) {
-        // After "=", a digit/function starts fresh; an operator continues from result.
-        if (/[0-9.]/.test(tok) || /[a-zπ√(]/i.test(tok)) expr = "";
-        justEvaluated = false;
-      }
-      expr += tok;
-      calcResult.textContent = "";
-      calcResult.classList.remove("error");
-      refreshExpr();
-    }
-
-    calcGrid.addEventListener("click", (e) => {
-      const t = e.target.closest("button");
-      if (!t) return;
-      if (t.dataset.ins !== undefined) { insert(t.dataset.ins); }
-      else if (t.dataset.back !== undefined) { expr = expr.slice(0, -1); justEvaluated = false; refreshExpr(); }
-      else if (t.dataset.clear !== undefined) { expr = ""; justEvaluated = false; calcResult.textContent = ""; calcResult.classList.remove("error"); refreshExpr(); }
-      else if (t.dataset.neg !== undefined) { expr = expr.startsWith("−") ? expr.slice(1) : "−" + expr; justEvaluated = false; refreshExpr(); }
-      else if (t.dataset.mode !== undefined) {
-        degMode = !degMode;
-        const m = degMode ? "DEG" : "RAD";
-        calcModeBtn.textContent = m;
-        calcModeLbl.textContent = "Mode: " + m;
-      }
-      else if (t.dataset.eq !== undefined) { evaluate(); }
-    });
-
-    function openCalc()  { calcPanel.removeAttribute("hidden"); calcBtn.setAttribute("aria-pressed", "true"); }
-    function closeCalc() { calcPanel.setAttribute("hidden", ""); calcBtn.setAttribute("aria-pressed", "false"); }
-    calcBtn.addEventListener("click", () => {
-      if (calcPanel.hasAttribute("hidden")) openCalc(); else closeCalc();
-    });
-    document.getElementById("calcClose").addEventListener("click", () => { closeCalc(); input.focus(); });
-
-    function updateShareBar() {
-      if (calcLog.length === 0) { shareBar.classList.remove("show"); return; }
-      const n = calcLog.length;
-      shareText.textContent = "📐 Rowdy can see " + n + " calculator step" + (n > 1 ? "s" : "") + " with your next message.";
-      shareBar.classList.add("show");
-    }
-    shareClear.addEventListener("click", () => { calcLog = []; updateShareBar(); });
-
-    function serializeCalcLog() {
-      return calcLog.map((c) => `${c.expr}  [${c.mode}]  = ${c.result}`).join("\n");
-    }
-
-    /* ====================================================================
-       ACCESSIBILITY MENU + PREFERENCES (persisted, with safe fallback)
-    ==================================================================== */
-    const a11yBtn  = document.getElementById("a11yBtn");
-    const a11yMenu = document.getElementById("a11yMenu");
-    const sizeVal  = document.getElementById("sizeVal");
-    const SCALES = [1, 1.15, 1.3, 1.5];
-    let scaleIdx = 0;
-
-    const store = {
-      get(k)   { try { return localStorage.getItem(k); } catch (e) { return null; } },
-      set(k,v) { try { localStorage.setItem(k, v); } catch (e) {} },
-    };
-
-    function applyScale() {
-      document.documentElement.style.setProperty("--font-scale", SCALES[scaleIdx]);
-      sizeVal.textContent = Math.round(SCALES[scaleIdx] * 100) + "%";
-      store.set("rowdy_scale", scaleIdx);
-    }
-    document.getElementById("sizeUp").addEventListener("click", () => { if (scaleIdx < SCALES.length - 1) scaleIdx++; applyScale(); });
-    document.getElementById("sizeDown").addEventListener("click", () => { if (scaleIdx > 0) scaleIdx--; applyScale(); });
-
-    function bindToggle(id, cls, key, onChange) {
-      const el = document.getElementById(id);
-      el.addEventListener("change", () => {
-        if (cls) document.body.classList.toggle(cls, el.checked);
-        store.set(key, el.checked ? "1" : "0");
-        if (onChange) onChange(el.checked);
-      });
-      return el;
-    }
-    const tHC   = bindToggle("tHighContrast", "high-contrast", "rowdy_hc");
-    const tRF   = bindToggle("tReadable", "readable-font", "rowdy_rf");
-    const tRM   = bindToggle("tReduceMotion", "reduce-motion", "rowdy_rm");
-    const tAR   = bindToggle("tAutoRead", null, "rowdy_ar", (on) => { autoRead = on; if (!on && synth) synth.cancel(); });
-    const langSel = document.getElementById("voiceLang");
-    langSel.addEventListener("change", () => { voiceLang = langSel.value; store.set("rowdy_lang", voiceLang); });
-
-    function loadPrefs() {
-      const s = parseInt(store.get("rowdy_scale"), 10); if (!isNaN(s) && s >= 0 && s < SCALES.length) scaleIdx = s; applyScale();
-      if (store.get("rowdy_hc") === "1") { tHC.checked = true; document.body.classList.add("high-contrast"); }
-      if (store.get("rowdy_rf") === "1") { tRF.checked = true; document.body.classList.add("readable-font"); }
-      if (store.get("rowdy_rm") === "1") { tRM.checked = true; document.body.classList.add("reduce-motion"); }
-      if (store.get("rowdy_ar") === "1") { tAR.checked = true; autoRead = true; }
-      const lg = store.get("rowdy_lang"); if (lg) { voiceLang = lg; langSel.value = lg; }
-    }
-
-    function openA11y() {
-      a11yMenu.removeAttribute("hidden");
-      a11yBtn.setAttribute("aria-expanded", "true");
-      const first = document.getElementById("sizeDown");
-      if (first) first.focus();
-    }
-    function closeA11y(returnFocus) {
-      a11yMenu.setAttribute("hidden", "");
-      a11yBtn.setAttribute("aria-expanded", "false");
-      if (returnFocus) a11yBtn.focus();
-    }
-    a11yBtn.addEventListener("click", () => {
-      if (a11yMenu.hasAttribute("hidden")) openA11y(); else closeA11y(true);
-    });
-    document.addEventListener("click", (e) => {
-      if (!a11yMenu.hasAttribute("hidden") && !a11yMenu.contains(e.target) && e.target !== a11yBtn) {
-        closeA11y(false);
-      }
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        if (!a11yMenu.hasAttribute("hidden")) closeA11y(true);
-        if (!calcPanel.hasAttribute("hidden")) { closeCalc(); }
-        if (listening && recog) recog.stop();
-      }
-    });
-
-    /* ====================================================================
-       SAVE CONVERSATION (.txt) — for showing an instructor
-    ==================================================================== */
-    // sessionStorage (not local): survives a refresh / mobile tab reload within
-    // the same session, but a genuine fresh open starts clean and shows the
-    // "Howdy!" welcome screen with Rowdy.
-    const STORE_KEY = "rowdy_transcript";
-
-    function persistTranscript() {
-      try {
-        const slim = transcript.slice(-200).map((x) => ({ role: x.role, text: x.text, meta: x.meta, t: x.t.toISOString() }));
-        sessionStorage.setItem(STORE_KEY, JSON.stringify(slim));
-      } catch (e) { /* storage unavailable — degrade silently */ }
-    }
-
-    // Re-draw a saved conversation after a refresh / mobile tab reload.
-    function loadSavedTranscript() {
-      let arr;
-      try {
-        const raw = sessionStorage.getItem(STORE_KEY);
-        if (!raw) return;
-        arr = JSON.parse(raw);
-      } catch (e) { return; }
-      if (!Array.isArray(arr) || arr.length === 0) return;
-      for (const item of arr) {
-        const t = new Date(item.t);
-        transcript.push({ role: item.role, text: item.text, meta: item.meta || "", t: isNaN(t) ? new Date() : t });
-        renderTurn(item.role, item.text, item.meta || "", { speak: false });
-      }
-    }
-
-    function buildTranscript() {
-      const now = new Date();
-      const lines = [];
-      lines.push("Rowdy the Homework Helper — Crowder College");
-      lines.push("Conversation saved: " + now.toLocaleString());
-      lines.push("=".repeat(48));
-      lines.push("");
-      for (const turn of transcript) {
-        const who = turn.role === "user" ? "Student" : "Rowdy";
-        const time = turn.t.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-        lines.push("[" + time + "] " + who + ":");
-        lines.push(turn.text);
-        if (turn.meta) lines.push("   (" + turn.meta + ")");
-        lines.push("");
-      }
-      // Normalize to CRLF so it opens cleanly in Windows Notepad too.
-      return lines.join("\n").replace(/\r?\n/g, "\r\n");
-    }
-
-    async function saveTranscript() {
-      if (transcript.length === 0) { alert("There's no conversation to save yet — ask Rowdy something first."); return; }
-      const out = buildTranscript();
-      const filename = "rowdy-conversation-" + new Date().toISOString().slice(0, 10) + ".txt";
-      // On touch devices, prefer the share sheet (Save to Files / email to instructor).
-      const coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
-      try {
-        if (coarse && navigator.canShare) {
-          const file = new File([out], filename, { type: "text/plain" });
-          if (navigator.canShare({ files: [file] })) {
-            await navigator.share({ files: [file], title: "Rowdy conversation" });
-            return;
-          }
-        }
-      } catch (e) { if (e && e.name === "AbortError") return; /* else fall through to download */ }
-      const url = URL.createObjectURL(new Blob([out], { type: "text/plain;charset=utf-8" }));
-      const a = document.createElement("a");
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    }
-
-    /* ====================================================================
-       EVENTS
-    ==================================================================== */
-    document.getElementById("saveBtn").addEventListener("click", saveTranscript);
-
-    document.getElementById("resetBtn").addEventListener("click", () => {
-      if (log.childElementCount === 0) { input.focus(); return; }
-      if (!confirm("Start a new conversation? This clears the current chat.")) return;
-      fetch("/api/reset", { method: "POST" }).catch(() => {});
-      if (synth) synth.cancel();
-      log.innerHTML = "";
-      log.classList.remove("visible");
-      empty.classList.remove("hidden");
-      attached.clear(); renderAttached();
-      calcLog = []; updateShareBar();
-      transcript.length = 0;
-      try { sessionStorage.removeItem(STORE_KEY); } catch (e) {}
-      input.value = ""; autoGrow(); input.focus();
-    });
+    /* ----- Wire up events --------------------------------------- */
 
     attachBtn.addEventListener("click", () => fileInput.click());
+
     fileInput.addEventListener("change", () => {
-      for (const f of fileInput.files) attached.set(crypto.randomUUID(), f);
+      for (const f of fileInput.files) {
+        attached.set(crypto.randomUUID(), f);
+      }
       fileInput.value = "";
       renderAttached();
     });
 
+    // Submit on Enter; allow Shift+Enter for newline.
     input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        form.requestSubmit();
+      }
     });
     input.addEventListener("input", autoGrow);
 
+    // Prompt chips: populate input and submit.
     document.querySelectorAll(".prompt-chip").forEach((chip) => {
-      chip.addEventListener("click", () => { input.value = chip.dataset.prompt; autoGrow(); form.requestSubmit(); });
+      chip.addEventListener("click", () => {
+        input.value = chip.dataset.prompt;
+        autoGrow();
+        form.requestSubmit();
+      });
     });
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const text  = input.value.trim();
       const files = [...attached.values()];
-      const calcPayload = serializeCalcLog();
       if (!text && !files.length) return;
 
-      const metaParts = [];
-      if (files.length) metaParts.push(`📎 ${files.length} file${files.length > 1 ? "s" : ""}: ${files.map(f => f.name).join(", ")}`);
-      if (calcLog.length) metaParts.push(`📐 ${calcLog.length} calculator step${calcLog.length > 1 ? "s" : ""} shared`);
-      add("user", text || "(attachment only)", metaParts.join("  ·  ") || null);
+      const fileMeta = files.length
+        ? `📎 ${files.length} file${files.length > 1 ? "s" : ""}: ${files.map(f => f.name).join(", ")}`
+        : null;
+      add("user", text || "(attachment only)", fileMeta);
 
       const body = new FormData();
       body.append("message", text);
-      if (calcPayload) body.append("calc_log", calcPayload);
       for (const f of files) body.append("files", f);
 
       // Reset composer state.
-      input.value = ""; autoGrow();
-      attached.clear(); renderAttached();
-      calcLog = []; updateShareBar();
+      input.value = "";
+      autoGrow();
+      attached.clear();
+      renderAttached();
       sendBtn.disabled = true;
 
       const typingTurn = showTyping();
-      announce("Rowdy is thinking, one moment.");
+
       try {
         const r = await fetch("/api/chat", { method: "POST", body });
         if (!r.ok) throw new Error((await r.text()) || r.statusText);
@@ -1623,20 +745,15 @@
         typingTurn.remove();
         add("bot", data.reply);
       } catch (err) {
-        console.error(err);
         typingTurn.remove();
-        add("bot", "Well, shoot — looks like somethin' hiccuped on my end. Give it another try in a sec, and if it keeps actin' up you can email tutoring@crowder.edu.");
+        add("bot", "Sorry — something went wrong. " + err.message);
       } finally {
-        announce("");
         sendBtn.disabled = false;
         input.focus();
       }
     });
 
-    /* ---------- Init -------------------------------------------- */
-    loadPrefs();
-    loadSavedTranscript();
-    refreshExpr();
+    // Focus the input on load for fast-start.
     window.addEventListener("load", () => input.focus());
   </script>
 </body>
