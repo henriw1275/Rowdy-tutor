@@ -419,6 +419,45 @@
     .speak-btn.speaking { border-color: var(--accent); color: #6b4515; background: var(--accent-soft); }
     .speak-btn svg { width: 14px; height: 14px; }
 
+    /* ===== Multiple-choice answer buttons ==================== */
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 10px;
+      align-self: stretch;
+    }
+    .choice-btn {
+      font: inherit;
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-md);
+      color: var(--ink);
+      cursor: pointer;
+      transition: border-color 0.12s, background 0.12s, transform 0.08s;
+      font-size: calc(14.5px * var(--font-scale));
+      line-height: 1.4;
+    }
+    .choice-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
+    .choice-btn:active:not(:disabled) { transform: scale(0.98); }
+    .choice-btn:disabled {
+      cursor: default;
+      opacity: 0.55;
+      background: var(--bg-soft);
+    }
+    .choices.spent .choice-btn { opacity: 0.5; cursor: default; }
+    .choice-btn.picked {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
     /* ===== Typing indicator ================================== */
     .typing {
       display: inline-flex;
@@ -1398,6 +1437,82 @@
       return { turn, wrap, msg };
     }
 
+    /* ---------- Multiple-choice answer buttons ---------------- */
+    // Rowdy can offer tappable options using the syntax:
+    //   [[CHOICES]]
+    //   - first option
+    //   - second option
+    //   [[/CHOICES]]
+    // We parse that out of his message text and render real buttons.
+    const CHOICES_RE = /\[\[CHOICES\]\]([\s\S]*?)\[\[\/CHOICES\]\]/i;
+    function parseChoices(raw) {
+      if (!raw) return { text: raw, choices: null };
+      const m = CHOICES_RE.exec(raw);
+      if (m) {
+        const opts = m[1]
+          .split("\n")
+          .map((l) => l.trim())
+          .filter((l) => /^[-*]\s+/.test(l))
+          .map((l) => l.replace(/^[-*]\s+/, "").trim())
+          .filter((l) => l.length > 0);
+        if (opts.length >= 2) {
+          const cleaned = raw.replace(CHOICES_RE, "").replace(/\n{3,}/g, "\n\n").trim();
+          return { text: cleaned, choices: opts };
+        }
+      }
+      // No match, or malformed block (unclosed / only one option). If the
+      // raw text contains stray [[CHOICES]] tags, strip them so the student
+      // doesn't see the markup.
+      if (/\[\[\/?CHOICES\]\]/i.test(raw)) {
+        return {
+          text: raw.replace(/\[\[\/?CHOICES\]\]/gi, "").replace(/\n{3,}/g, "\n\n").trim(),
+          choices: null,
+        };
+      }
+      return { text: raw, choices: null };
+    }
+
+    function renderChoices(wrap, options) {
+      const box = document.createElement("div");
+      box.className = "choices";
+      box.setAttribute("role", "group");
+      box.setAttribute("aria-label", "Answer choices");
+      for (const text of options) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "choice-btn";
+        btn.textContent = text;
+        btn.addEventListener("click", () => {
+          if (btn.disabled) return;
+          // Lock this set immediately and visually mark the picked one
+          box.querySelectorAll("button").forEach((b) => { b.disabled = true; });
+          btn.classList.add("picked");
+          box.classList.add("spent");
+          input.value = text;
+          autoGrow();
+          form.requestSubmit();
+        });
+        box.appendChild(btn);
+      }
+      wrap.appendChild(box);
+    }
+
+    // After any user turn (typed or button-clicked) and after restore,
+    // make sure only the very latest bot turn's choice buttons are live.
+    function disableStaleChoices() {
+      const turns = log.querySelectorAll(".turn");
+      if (!turns.length) return;
+      const lastTurn = turns[turns.length - 1];
+      const liveBox = lastTurn.classList.contains("bot")
+        ? lastTurn.querySelector(".choices")
+        : null;
+      log.querySelectorAll(".choices").forEach((box) => {
+        if (box === liveBox) return;
+        box.querySelectorAll("button").forEach((b) => { b.disabled = true; });
+        box.classList.add("spent");
+      });
+    }
+
     function renderTurn(role, text, meta, opts) {
       opts = opts || {};
       ensureLogVisible();
@@ -1420,14 +1535,17 @@
         log.appendChild(turn);
         renderMath(msg);
         linkify(msg);
+        disableStaleChoices();
       } else {
         const { turn, wrap, msg } = makeBotTurn();
-        msg.textContent = text;
+        const parsed = parseChoices(text);
+        msg.textContent = parsed.text;
         log.appendChild(turn);
         renderMath(msg);
         linkify(msg);
-        addSpeakButton(wrap, text);
-        if (opts.speak) speak(text);
+        if (parsed.choices) renderChoices(wrap, parsed.choices);
+        addSpeakButton(wrap, parsed.text);
+        if (opts.speak) speak(parsed.text);
       }
       log.scrollTop = log.scrollHeight;
     }
@@ -1767,6 +1885,7 @@
         transcript.push({ role: item.role, text: item.text, meta: item.meta || "", t: isNaN(t) ? new Date() : t });
         renderTurn(item.role, item.text, item.meta || "", { speak: false });
       }
+      disableStaleChoices();
     }
 
     function buildTranscript() {
@@ -1780,7 +1899,13 @@
         const who = turn.role === "user" ? "Student" : "Rowdy";
         const time = turn.t.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
         lines.push("[" + time + "] " + who + ":");
-        lines.push(turn.text);
+        const parsed = turn.role === "bot" ? parseChoices(turn.text) : { text: turn.text, choices: null };
+        lines.push(parsed.text);
+        if (parsed.choices) {
+          parsed.choices.forEach((opt, i) => {
+            lines.push("   " + String.fromCharCode(65 + i) + ") " + opt);
+          });
+        }
         if (turn.meta) lines.push("   (" + turn.meta + ")");
         lines.push("");
       }
