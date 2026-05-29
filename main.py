@@ -173,6 +173,7 @@ async def chat(
     request: Request,
     message: str = Form(""),
     calc_log: str = Form(""),
+    intake: str = Form(""),
     files: list[UploadFile] = File(default=[]),
 ):
     sid = _ensure_session_id(request)
@@ -210,6 +211,15 @@ async def chat(
             })
         else:
             raise HTTPException(415, f"Unsupported file type: {media_type or 'unknown'}")
+    if intake.strip():
+        content_blocks.append({
+            "type": "text",
+            "text": (
+                "[Student intake — provided up front, before the conversation started. "
+                "Use this to skip the diagnostic flow and dive straight into helping. "
+                "Honor the stated AI policy per your color guidance.\n" + intake + "]"
+            ),
+        })
     if calc_log.strip():
         content_blocks.append({
             "type": "text",
