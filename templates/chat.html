@@ -519,6 +519,190 @@
     }
     .empty-hint svg { width: 17px; height: 17px; flex-shrink: 0; color: var(--primary); }
 
+    /* ===== Terms of Service modal ============================ */
+    .tos-overlay {
+      position: fixed; inset: 0;
+      background: rgba(31, 21, 12, 0.55);
+      z-index: 100;
+      display: grid; place-items: center;
+      padding: 16px;
+      animation: rise 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .tos-overlay[hidden] { display: none; }
+    .tos-card {
+      width: 100%;
+      max-width: 540px;
+      max-height: calc(100dvh - 32px);
+      background: var(--surface);
+      border-radius: var(--r-xl);
+      box-shadow: var(--shadow-lg);
+      border-top: 4px solid var(--accent);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .tos-card h2 {
+      margin: 0;
+      padding: 18px 22px 4px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .tos-card .sub {
+      padding: 0 22px 14px;
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+    .tos-body {
+      padding: 6px 22px 14px;
+      overflow-y: auto;
+      font-size: calc(14px * var(--font-scale));
+      line-height: 1.55;
+      color: var(--ink);
+      flex: 1;
+    }
+    .tos-body p { margin: 8px 0; }
+    .tos-body ul { margin: 4px 0 8px 18px; padding: 0; }
+    .tos-body li { margin: 6px 0; }
+    .tos-foot {
+      padding: 12px 22px 16px;
+      background: var(--bg-soft);
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .tos-check {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 500;
+      cursor: pointer;
+    }
+    .tos-check input {
+      width: 20px; height: 20px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+    .tos-continue {
+      width: 100%;
+      padding: 12px 16px;
+      border: 0;
+      border-radius: var(--r-md);
+      background: linear-gradient(135deg, var(--primary), var(--primary-hov));
+      color: #fff;
+      font: inherit; font-weight: 600; font-size: 15px;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .tos-continue:disabled { opacity: 0.45; cursor: not-allowed; }
+    .tos-continue:active:not(:disabled) { transform: scale(0.98); }
+
+    /* ===== Intake form ====================================== */
+    .intake {
+      width: 100%; max-width: 460px;
+      display: flex; flex-direction: column;
+      gap: 12px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 16px;
+      text-align: left;
+    }
+    .intake[hidden] { display: none; }
+    .intake fieldset {
+      border: 0; margin: 0; padding: 0;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .intake legend {
+      font-size: 13.5px; font-weight: 600;
+      color: var(--ink); padding: 0;
+    }
+    .radio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .radio-grid label {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 11px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: border-color 0.12s, background 0.12s;
+    }
+    .radio-grid label:hover { border-color: var(--primary); }
+    .radio-grid input { position: absolute; opacity: 0; pointer-events: none; }
+    .radio-grid input:checked + .dot + span { font-weight: 600; }
+    .radio-grid label:has(input:checked) {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+    }
+    .radio-grid input:focus-visible + .dot + span { text-decoration: underline; }
+    .dot {
+      width: 14px; height: 14px;
+      border-radius: var(--r-full);
+      flex-shrink: 0;
+      border: 2px solid rgba(0,0,0,0.1);
+    }
+    .dot.green  { background: #4f9d5c; }
+    .dot.yellow { background: #e3b341; }
+    .dot.red    { background: #b4452f; }
+    .dot.na     { background: #b6a795; }
+
+    .intake-field {
+      display: flex; flex-direction: column; gap: 4px;
+      font-size: 13.5px; font-weight: 600;
+      color: var(--ink);
+    }
+    .intake-field em {
+      font-style: normal; font-weight: 400; color: var(--ink-faded);
+    }
+    .intake-field input, .intake-field textarea {
+      font: inherit;
+      font-size: calc(14px * var(--font-scale));
+      font-weight: 400;
+      padding: 9px 11px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      background: var(--bg-soft);
+      color: var(--ink);
+      resize: vertical;
+    }
+    .intake-field input:focus, .intake-field textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 111, 168, 0.15);
+    }
+    .intake-actions {
+      display: flex; gap: 8px; align-items: center;
+      margin-top: 4px;
+    }
+    .intake-skip {
+      flex-shrink: 0;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      border-radius: var(--r-md);
+      cursor: pointer;
+      font: inherit; font-size: 13.5px; font-weight: 500;
+      color: var(--ink-soft);
+    }
+    .intake-skip:hover { border-color: var(--ink-soft); color: var(--ink); }
+    .intake-start {
+      flex: 1;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: var(--r-md);
+      background: linear-gradient(135deg, var(--primary), var(--primary-hov));
+      color: #fff;
+      cursor: pointer;
+      font: inherit; font-size: 14px; font-weight: 600;
+      transition: opacity 0.15s;
+    }
+    .intake-start:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .prompts[hidden] { display: none; }
+
     .prompts {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -845,6 +1029,29 @@
   </style>
 </head>
 <body>
+  <!-- Terms of Service: shown once per device, must be accepted before chatting. -->
+  <div id="tosModal" class="tos-overlay" role="dialog" aria-modal="true" aria-labelledby="tosTitle" hidden>
+    <div class="tos-card">
+      <h2 id="tosTitle">Welcome to Rowdy</h2>
+      <p class="sub">Before we get started, please take a quick look at how to use this tutor.</p>
+      <div class="tos-body" id="tosBody">
+        <p>Rowdy is Crowder College's homework helper — an AI tutor here to help you think through your coursework and study, not to do your work for you. By continuing, please agree to use Rowdy the right way:</p>
+        <ul>
+          <li><strong>Use Rowdy for school.</strong> Class assignments, studying, exam prep, and other learning. Please don't use it for personal chat, entertainment, or anything unrelated to coursework.</li>
+          <li><strong>Follow your instructor's AI policy.</strong> Rowdy will ask which policy applies. Even when AI use is allowed, you should cite or acknowledge using an AI tutor on any work you turn in.</li>
+          <li><strong>Don't use Rowdy to be dishonest.</strong> Submitting AI-generated work as your own — when your instructor doesn't allow it — is academic dishonesty under Crowder's policies. Use Rowdy to learn, not to bypass learning.</li>
+          <li><strong>No commercial use.</strong> Rowdy is provided free for Crowder students; please don't use it for outside business purposes.</li>
+          <li><strong>Rowdy isn't a counselor.</strong> If you're in crisis or need emotional support, please contact Crowder Counseling Services or call/text 988.</li>
+          <li><strong>Privacy.</strong> Rowdy keeps a record of usage counts but not the content of your conversations. Please don't share personal information you wouldn't want a tutor to know.</li>
+        </ul>
+      </div>
+      <div class="tos-foot">
+        <label class="tos-check"><input type="checkbox" id="tosAgree" /><span>I understand and agree</span></label>
+        <button id="tosContinue" type="button" class="tos-continue" disabled>Continue</button>
+      </div>
+    </div>
+  </div>
+
   <div class="shell">
     <header>
       <div class="header-logo">
@@ -927,7 +1134,34 @@
         I'm Rowdy, your Crowder College study buddy.<br />
         Ask me anything you're working on.
       </p>
-      <div class="prompts">
+      <form id="intakeForm" class="intake">
+        <fieldset>
+          <legend>What's your instructor's AI policy?</legend>
+          <div class="radio-grid">
+            <label><input type="radio" name="aiPolicy" value="green" /><span class="dot green"></span><span>Green &mdash; allowed</span></label>
+            <label><input type="radio" name="aiPolicy" value="yellow" /><span class="dot yellow"></span><span>Yellow &mdash; limited</span></label>
+            <label><input type="radio" name="aiPolicy" value="red" /><span class="dot red"></span><span>Red &mdash; not allowed</span></label>
+            <label><input type="radio" name="aiPolicy" value="na" /><span class="dot na"></span><span>Not applicable</span></label>
+          </div>
+        </fieldset>
+        <label class="intake-field">
+          <span>What you're working on</span>
+          <input type="text" id="intakeTopic" maxlength="120" placeholder="e.g., factoring quadratics, essay intro, vocab test" />
+        </label>
+        <label class="intake-field">
+          <span>Subject or class <em>(optional)</em></span>
+          <input type="text" id="intakeSubject" maxlength="80" placeholder="e.g., College Algebra, ATI TEAS" />
+        </label>
+        <label class="intake-field">
+          <span>What you've tried so far <em>(optional)</em></span>
+          <textarea id="intakeTried" rows="2" maxlength="500" placeholder="Anything you've already attempted"></textarea>
+        </label>
+        <div class="intake-actions">
+          <button type="button" id="intakeSkip" class="intake-skip">Skip &mdash; I'll just chat</button>
+          <button type="submit" id="intakeStart" class="intake-start" disabled>Start with Rowdy</button>
+        </div>
+      </form>
+      <div class="prompts" hidden>
         <button class="prompt-chip" data-prompt="I'm stuck on a problem — can you walk me through it?">
           <span class="emoji">🤔</span><span>I'm stuck on something</span>
         </button>
@@ -1064,6 +1298,7 @@
 
     const attached = new Map();   // key -> File
     const transcript = [];        // clean record of the visible conversation, for "Save"
+    let pendingIntake = "";       // structured intake, sent once with the next user message
 
     /** Announce a transient status (e.g. "Rowdy is thinking") to screen readers. */
     function announce(msg) { if (srStatus) srStatus.textContent = msg; }
@@ -1557,6 +1792,121 @@
     }
 
     /* ====================================================================
+       ONBOARDING — Terms of Service modal + intake form
+    ==================================================================== */
+    const TOS_KEY = "rowdy_tos_v1";                 // localStorage; once per device
+    const INTAKE_SKIP_KEY = "rowdy_intake_skipped"; // sessionStorage; per session
+
+    const tosModal       = document.getElementById("tosModal");
+    const tosAgree       = document.getElementById("tosAgree");
+    const tosContinue    = document.getElementById("tosContinue");
+    const intakeForm     = document.getElementById("intakeForm");
+    const intakeTopic    = document.getElementById("intakeTopic");
+    const intakeSubject  = document.getElementById("intakeSubject");
+    const intakeTried    = document.getElementById("intakeTried");
+    const intakeStart    = document.getElementById("intakeStart");
+    const intakeSkip     = document.getElementById("intakeSkip");
+    const promptsDiv     = document.querySelector(".prompts");
+
+    function tosAccepted() { try { return localStorage.getItem(TOS_KEY) === "1"; } catch (e) { return false; } }
+    function intakeSkipped() { try { return sessionStorage.getItem(INTAKE_SKIP_KEY) === "1"; } catch (e) { return false; } }
+    function setIntakeSkipped(v) {
+      try {
+        if (v) sessionStorage.setItem(INTAKE_SKIP_KEY, "1");
+        else sessionStorage.removeItem(INTAKE_SKIP_KEY);
+      } catch (e) {}
+    }
+
+    function showTos() {
+      tosModal.removeAttribute("hidden");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => tosAgree.focus(), 50);
+    }
+    function hideTos() {
+      tosModal.setAttribute("hidden", "");
+      document.body.style.overflow = "";
+    }
+
+    function showIntake() {
+      intakeForm.removeAttribute("hidden");
+      promptsDiv.setAttribute("hidden", "");
+    }
+    function hideIntake(revealPrompts) {
+      intakeForm.setAttribute("hidden", "");
+      if (revealPrompts) promptsDiv.removeAttribute("hidden");
+    }
+
+    function updateIntakeStart() {
+      const hasTopic = intakeTopic.value.trim().length > 0;
+      const hasPolicy = !!document.querySelector('input[name="aiPolicy"]:checked');
+      intakeStart.disabled = !(hasTopic && hasPolicy);
+    }
+
+    // Decide what the welcome screen shows after ToS is settled.
+    function decideWelcomeState() {
+      if (transcript.length > 0) { hideIntake(false); return; }   // mid-conversation: nothing
+      if (intakeSkipped()) { hideIntake(true); return; }          // they chose to skip: show chips
+      showIntake(); updateIntakeStart();                          // default fresh start: intake form
+    }
+
+    intakeTopic.addEventListener("input", updateIntakeStart);
+    intakeForm.addEventListener("change", updateIntakeStart);
+
+    intakeSkip.addEventListener("click", () => {
+      setIntakeSkipped(true);
+      hideIntake(true);
+      input.focus();
+    });
+
+    intakeForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const topic = intakeTopic.value.trim();
+      const subject = intakeSubject.value.trim();
+      const tried = intakeTried.value.trim();
+      const policyEl = document.querySelector('input[name="aiPolicy"]:checked');
+      if (!policyEl || !topic) return;
+      const policy = policyEl.value;
+
+      // Natural-sounding visible first message for the chat log.
+      let msg = subject
+        ? `I'm working on ${topic} in ${subject}.`
+        : `I'm working on ${topic}.`;
+      if (tried) msg += ` Here's what I've tried: ${tried}`;
+
+      // Structured intake context for Rowdy (sent once with this turn only).
+      const lines = [`AI policy: ${policy}`];
+      if (subject) lines.push(`Subject/class: ${subject}`);
+      lines.push(`Working on: ${topic}`);
+      if (tried) lines.push(`Tried so far: ${tried}`);
+      pendingIntake = lines.join("\n");
+
+      input.value = msg;
+      autoGrow();
+      hideIntake(false);
+      setIntakeSkipped(true);   // don't re-show this session even if mid-chat
+      form.requestSubmit();
+    });
+
+    tosAgree.addEventListener("change", () => { tosContinue.disabled = !tosAgree.checked; });
+    tosContinue.addEventListener("click", () => {
+      if (!tosAgree.checked) return;
+      try { localStorage.setItem(TOS_KEY, "1"); } catch (e) {}
+      hideTos();
+      decideWelcomeState();
+    });
+
+    // Light focus trap: Tab inside the ToS modal cycles between the checkbox
+    // and the Continue button so keyboard users can't escape it.
+    tosModal.addEventListener("keydown", (e) => {
+      if (e.key !== "Tab" || tosModal.hasAttribute("hidden")) return;
+      const focusables = [tosAgree, tosContinue].filter(el => !el.disabled);
+      if (focusables.length === 0) return;
+      const first = focusables[0], last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+
+    /* ====================================================================
        EVENTS
     ==================================================================== */
     document.getElementById("saveBtn").addEventListener("click", saveTranscript);
@@ -1571,8 +1921,12 @@
       empty.classList.remove("hidden");
       attached.clear(); renderAttached();
       calcLog = []; updateShareBar();
+      pendingIntake = "";
       transcript.length = 0;
       try { sessionStorage.removeItem(STORE_KEY); } catch (e) {}
+      setIntakeSkipped(false);
+      intakeForm.reset();
+      decideWelcomeState();
       input.value = ""; autoGrow(); input.focus();
     });
 
@@ -1607,12 +1961,14 @@
       const body = new FormData();
       body.append("message", text);
       if (calcPayload) body.append("calc_log", calcPayload);
+      if (pendingIntake) body.append("intake", pendingIntake);
       for (const f of files) body.append("files", f);
 
       // Reset composer state.
       input.value = ""; autoGrow();
       attached.clear(); renderAttached();
       calcLog = []; updateShareBar();
+      pendingIntake = "";
       sendBtn.disabled = true;
 
       const typingTurn = showTyping();
@@ -1638,6 +1994,8 @@
     loadPrefs();
     loadSavedTranscript();
     refreshExpr();
+    if (!tosAccepted()) showTos();
+    else decideWelcomeState();
     window.addEventListener("load", () => input.focus());
   </script>
 </body>
