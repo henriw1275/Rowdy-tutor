@@ -73,7 +73,7 @@ USAGE = {
 # Global daily budget tracker (UTC day).
 DAILY = {"day": None, "tokens": 0}
 
-HISTORY_TURN_CAP = 12
+HISTORY_TURN_CAP = 10
 MAX_FILE_BYTES = 5 * 1024 * 1024
 ALLOWED_IMAGE_TYPES = {"image/png", "image/jpeg", "image/gif", "image/webp"}
 ALLOWED_DOCUMENT_TYPES = {"application/pdf"}
