@@ -445,12 +445,23 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 32px 24px 48px;
-      gap: 22px;
+      justify-content: flex-start;
+      padding: 28px 24px 36px;
+      gap: 18px;
       text-align: center;
       overflow-y: auto;
     }
+    /* When the intake form is the focus, compact the welcome chrome so the
+       form stays above the fold on desktop and doesn't bury Rowdy. */
+    .empty.intake-open { padding-top: 18px; gap: 12px; }
+    .empty.intake-open .empty-avatar {
+      width: 96px; height: 96px;
+      border-width: 3px;
+    }
+    .empty.intake-open .empty-avatar .fallback { font-size: 42px; }
+    .empty.intake-open .empty-greeting { font-size: 36px; }
+    .empty.intake-open .empty-tagline { display: none; }
+    .empty.intake-open .empty-hint    { display: none; }
     .empty.hidden { display: none; }
     #log:not(.visible) { display: none; }
 
@@ -597,7 +608,7 @@
 
     /* ===== Intake form ====================================== */
     .intake {
-      width: 100%; max-width: 460px;
+      width: 100%; max-width: 540px;
       display: flex; flex-direction: column;
       gap: 12px;
       background: var(--surface);
@@ -651,6 +662,7 @@
 
     .intake-field {
       display: flex; flex-direction: column; gap: 4px;
+      width: 100%;
       font-size: 13.5px; font-weight: 600;
       color: var(--ink);
     }
@@ -658,6 +670,7 @@
       font-style: normal; font-weight: 400; color: var(--ink-faded);
     }
     .intake-field input, .intake-field textarea {
+      width: 100%;
       font: inherit;
       font-size: calc(14px * var(--font-scale));
       font-weight: 400;
@@ -675,6 +688,7 @@
     }
     .intake-actions {
       display: flex; gap: 8px; align-items: center;
+      width: 100%;
       margin-top: 4px;
     }
     .intake-skip {
@@ -1016,7 +1030,12 @@
       .bubble-wrap { max-width: 86%; }
       form { padding: 12px 14px 14px; }
       textarea { font-size: max(16px, calc(15px * var(--font-scale))); }
+      .empty { padding: 20px 16px 28px; }
       .empty-avatar { width: 108px; height: 108px; }
+      .empty.intake-open { padding-top: 14px; gap: 10px; }
+      .empty.intake-open .empty-avatar { width: 80px; height: 80px; }
+      .empty.intake-open .empty-avatar .fallback { font-size: 36px; }
+      .empty.intake-open .empty-greeting { font-size: 30px; }
       .empty-greeting { font-size: 38px; }
       .prompts { grid-template-columns: 1fr; }
       #calc, #calc-share, #attached { margin-left: 14px; margin-right: 14px; }
@@ -1830,9 +1849,11 @@
     function showIntake() {
       intakeForm.removeAttribute("hidden");
       promptsDiv.setAttribute("hidden", "");
+      empty.classList.add("intake-open");
     }
     function hideIntake(revealPrompts) {
       intakeForm.setAttribute("hidden", "");
+      empty.classList.remove("intake-open");
       if (revealPrompts) promptsDiv.removeAttribute("hidden");
     }
 
